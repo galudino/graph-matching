@@ -17,3 +17,7 @@ Checks: >
   -bugprone-easily-swappable-parameters,
   -clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling,
   -performance-no-int-to-ptr
+CheckOptions:
+  # The logging macros are lowercase by choice.
+  - key: readability-identifier-naming.MacroDefinitionIgnoredRegexp
+    value: '^log[bewi]$'
