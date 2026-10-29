@@ -2,10 +2,8 @@
 /// \file       utils.h
 /// \brief      Diagnostics, timing, prefix sums, and graph and result I/O.
 ///
-/// \details    Adapted from utils.h in the CS 314 (Rutgers, Fall 2018)
-///             Project 3 code package.
+/// \details    Adapted from course-provided starter code.
 ///
-/// \author     Yanhao Chen (original)
 /// \author     Gemuele (Gem) Aludino
 /// \date       2026-10-29
 ///
@@ -48,7 +46,7 @@ extern "C" {
 /// \brief      Print a tagged diagnostic message to stderr.
 ///
 /// \details    Messages longer than 1023 characters are truncated. Use the
-///             logb (bug), loge (error), logw (warning), and logi (info) macros 
+///             logb (bug), loge (error), logw (warning), and logi (info) macros
 ///             instead of calling this directly.
 ///
 /// \param      level       Severity tag, such as "error".

@@ -2,10 +2,8 @@
 /// \file       match.h
 /// \brief      Matching status codes and the matching entry points.
 ///
-/// \details    Adapted from match.h in the CS 314 (Rutgers, Fall 2018)
-///             Project 3 code package.
+/// \details    Adapted from course-provided starter code.
 ///
-/// \author     Yanhao Chen (original)
 /// \author     Gemuele (Gem) Aludino
 /// \date       2026-10-29
 ///

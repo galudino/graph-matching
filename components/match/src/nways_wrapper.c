@@ -2,10 +2,8 @@
 /// \file       nways_wrapper.c
 /// \brief      Thread driver for N-way handshaking matching.
 ///
-/// \details    Adapted from nwayswrapper.c in the CS 314 (Rutgers, Fall
-///             2018) Project 3 code package.
+/// \details    Adapted from course-provided starter code.
 ///
-/// \author     Yanhao Chen (original)
 /// \author     Gemuele (Gem) Aludino
 /// \date       2026-10-29
 ///

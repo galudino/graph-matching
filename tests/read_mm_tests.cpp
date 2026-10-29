@@ -19,7 +19,7 @@
 namespace {
 
 ///
-/// \brief      Read data/test.mtx, the 9-vertex example from the code package.
+/// \brief      Read data/test.mtx, a 9-vertex example matrix.
 ///
 /// \return     The graph; release it with graph_free().
 ///

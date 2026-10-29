@@ -4,10 +4,8 @@
 ///
 /// \details    extend_one_hand() and check_handshaking() are implemented by
 ///             the assignment in oneway.c; the thread driver is in
-///             oneway_wrapper.c. Adapted from oneway.h in the CS 314
-///             (Rutgers, Fall 2018) Project 3 code package.
+///             oneway_wrapper.c. Adapted from course-provided starter code.
 ///
-/// \author     Yanhao Chen (original)
 /// \author     Gemuele (Gem) Aludino
 /// \date       2026-10-29
 ///

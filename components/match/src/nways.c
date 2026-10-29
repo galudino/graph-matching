@@ -2,9 +2,9 @@
 /// \file       nways.c
 /// \brief      N-way handshaking matching (assignment, extra credit).
 ///
-/// \details    See spec sections 2.2 (work balancing) and 2.4, in
-///             docs/CS314_Fall_2018_Project3.pdf. check_handshaking() from
-///             oneway.c is reused for the handshake step.
+/// \details    Each function's inputs and outputs are documented in
+///             nways.h. check_handshaking() from oneway.c is reused for the
+///             handshake step.
 ///
 /// \author     Gemuele (Gem) Aludino
 /// \date       2026-10-29

@@ -3,10 +3,8 @@
 /// \brief      Removes matched vertices from the work list between passes.
 ///
 /// \details    Implemented by the assignment in filter.c. Adapted from
-///             filter.h in the CS 314 (Rutgers, Fall 2018) Project 3 code
-///             package.
+///             course-provided starter code.
 ///
-/// \author     Yanhao Chen (original)
 /// \author     Gemuele (Gem) Aludino
 /// \date       2026-10-29
 ///

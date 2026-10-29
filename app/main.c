@@ -3,10 +3,9 @@
 /// \brief      Entry point for the graph matching command-line application.
 ///
 /// \details    Reads a Matrix Market graph, runs one-way or N-way handshaking
-///             matching, and writes the result. Adapted from main.c in the
-///             CS 314 (Rutgers, Fall 2018) Project 3 code package.
+///             matching, and writes the result. Adapted from course-provided
+///             starter code.
 ///
-/// \author     Yanhao Chen (original)
 /// \author     Gemuele (Gem) Aludino
 /// \date       2026-10-29
 ///

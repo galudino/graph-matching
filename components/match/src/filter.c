@@ -2,8 +2,8 @@
 /// \file       filter.c
 /// \brief      Filtering matched vertices between passes (assignment).
 ///
-/// \details    See spec sections 2.2 (work balancing) and 2.5, in
-///             docs/CS314_Fall_2018_Project3.pdf.
+/// \details    Each function's inputs and outputs are documented in
+///             filter.h.
 ///
 /// \author     Gemuele (Gem) Aludino
 /// \date       2026-10-29

@@ -4,10 +4,9 @@
 ///
 /// \details    generate_n_way_graph() and prune_n_way_graph() are
 ///             implemented by the assignment in nways.c; the thread driver
-///             is in nways_wrapper.c. Adapted from nways.h in the CS 314
-///             (Rutgers, Fall 2018) Project 3 code package.
+///             is in nways_wrapper.c. Adapted from course-provided starter
+///             code.
 ///
-/// \author     Yanhao Chen (original)
 /// \author     Gemuele (Gem) Aludino
 /// \date       2026-10-29
 ///

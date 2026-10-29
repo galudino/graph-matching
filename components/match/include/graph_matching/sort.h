@@ -7,10 +7,8 @@
 ///             (ascending), C is column index (ascending), and W is weight
 ///             (descending).
 ///
-///             Adapted from sort.h in the CS 314 (Rutgers, Fall 2018)
-///             Project 3 code package.
+///             Adapted from course-provided starter code.
 ///
-/// \author     Yanhao Chen (original)
 /// \author     Gemuele (Gem) Aludino
 /// \date       2026-10-29
 ///

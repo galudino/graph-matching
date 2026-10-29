@@ -2,10 +2,8 @@
 /// \file       graph_data.h
 /// \brief      Adjacency-array representation of an undirected weighted graph.
 ///
-/// \details    Adapted from DataStructure.h in the CS 314 (Rutgers, Fall 2018)
-///             Project 3 code package.
+/// \details    Adapted from course-provided starter code.
 ///
-/// \author     Yanhao Chen (original)
 /// \author     Gemuele (Gem) Aludino
 /// \date       2026-10-29
 ///
