@@ -24,7 +24,12 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${input:graph_matchingPath}",
-            "args": [],
+            "args": [
+                "${workspaceFolder}/data/test.mtx",
+                "${workspaceFolder}/build/test.out",
+                "oneWay",
+                "2"
+            ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
