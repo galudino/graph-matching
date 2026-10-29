@@ -46,9 +46,9 @@ double get_time(const struct timespec *start_time, const struct timespec *end_ti
 
 void print_usage(const char *program) {
     fprintf(stderr,
-            "Usage: %s [input file] [output file] [method] [# hands] [# threads]\n"
-            "       e.g. %s cant.mtx output oneWay 4\n"
-            "            %s cant.mtx output nWays 2 4\n"
+            "Usage: %s [input-file] [output-file] [method] [# of hands] [# of threads]\n"
+            "       e.g. %s input.mtx output oneWay 4\n"
+            "            %s input.mtx output nWays 2 4\n"
             "       [input file]: input file (matrix market format)\n"
             "       [output file]: output file\n"
             "       [method]: oneWay: one-way handshaking method\n"
@@ -107,11 +107,11 @@ void print_result(const int *res, int n_nodes) {
 void write_match_result(const char *file_name, const int *res, int n_nodes) {
     FILE *f = fopen(file_name, "w");
     if (f == NULL) {
-        ERROR("Could not open the output file.\n");
+        loge("Unable to open the output file.\n");
         exit(EXIT_FAILURE);
     }
 
-    fprintf(stderr, "Start Writing Matching Results to %s ... ", file_name);
+    fprintf(stderr, "Start writing matching results to '%s'...", file_name);
 
     for (int i = 0; i < n_nodes; i++) {
         fprintf(f, "%d\n", res[i]);
@@ -119,7 +119,7 @@ void write_match_result(const char *file_name, const int *res, int n_nodes) {
 
     fclose(f);
 
-    fprintf(stderr, "SUCCESS\n");
+    fprintf(stderr, "*** SUCCESS ***\n");
 }
 
 ///
@@ -153,7 +153,7 @@ static void read_entry_weight(FILE *f, double *weight) {
     if (next == '\n' || next == EOF) {
         *weight = 1;
     } else if (fscanf(f, "%lg\n", weight) != 1) {
-        ERROR("Could not read an edge weight from the Matrix Market file.\n");
+        loge("Unable to read an edge weight from the Matrix Market file.\n");
         exit(EXIT_FAILURE);
     }
 }
@@ -169,13 +169,13 @@ static void read_entry_weight(FILE *f, double *weight) {
 /// \param      graph       Graph whose index[] and weight[] are filled in.
 ///
 static void write_sequential_matching(int *row, graph_data *graph) {
-    fprintf(stderr, "\nEnable Sequential Matching\n");
+    fprintf(stderr, "\nEnable sequential matching.\n");
 
     sort_wrc(row, graph->index, graph->weight, graph->n_edges);
 
     FILE *f = fopen("seq.out", "w");
     if (f == NULL) {
-        ERROR("Could not open the seq output file.\n");
+        loge("Unable to open the sequential output file.\n");
         exit(EXIT_FAILURE);
     }
 
@@ -202,17 +202,17 @@ static void write_sequential_matching(int *row, graph_data *graph) {
 }
 
 void read_mm(const char *file_name, graph_data *graph) {
-    fprintf(stderr, "Start Reading Matrix %s ... ", file_name);
+    fprintf(stderr, "Start reading matrix '%s'...", file_name);
 
     FILE *f = fopen(file_name, "r");
     if (f == NULL) {
-        ERROR("Could not open the input Matrix Market file.\n");
+        loge("Unable to open the input Matrix Market file.\n");
         exit(EXIT_FAILURE);
     }
 
     MM_typecode mat_code;
     if (mm_read_banner(f, &mat_code) != 0) {
-        ERROR("Could not process Matrix Market banner.\n");
+        loge("Unable to process Matrix Market banner.\n");
         exit(EXIT_FAILURE);
     }
 
@@ -220,7 +220,7 @@ void read_mm(const char *file_name, graph_data *graph) {
     int ncol = 0;
     int nnz = 0;
     if (mm_read_mtx_crd_size(f, &nrow, &ncol, &nnz) != 0) {
-        ERROR("Could not read the size of the sparse matrix.\n");
+        loge("Unable to read the size of the sparse matrix.\n");
         exit(EXIT_FAILURE);
     }
 
@@ -232,14 +232,14 @@ void read_mm(const char *file_name, graph_data *graph) {
 
     for (int i = 0; i < nnz; i++) {
         if (fscanf(f, "%d %d", &coo_row[i], &coo_col[i]) != 2) {
-            ERROR("Could not read entry %d of the sparse matrix.\n", i);
+            loge("Unable to read entry %d of the sparse matrix.\n", i);
             exit(EXIT_FAILURE);
         }
 
         if (coo_row[i] == coo_col[i]) {
             read_entry_weight(f, &coo_weight[i]);
-            nnz--;
-            i--;
+            --nnz;
+            --i;
             continue;
         }
 
@@ -249,8 +249,8 @@ void read_mm(const char *file_name, graph_data *graph) {
             coo_col[i] = tmp;
         }
 
-        coo_row[i]--;
-        coo_col[i]--;
+        --coo_row[i];
+        --coo_col[i];
         read_entry_weight(f, &coo_weight[i]);
     }
 
@@ -273,12 +273,12 @@ void read_mm(const char *file_name, graph_data *graph) {
         row[j] = coo_row[i];
         graph->index[j] = coo_col[i];
         graph->weight[j] = coo_weight[i];
-        j++;
+        ++j;
 
         row[j] = coo_col[i];
         graph->index[j] = coo_row[i];
         graph->weight[j] = coo_weight[i];
-        j++;
+        ++j;
     }
 
     graph->n_edges = j;
@@ -295,7 +295,7 @@ void read_mm(const char *file_name, graph_data *graph) {
     graph->degree = calloc((size_t)graph->n_nodes, sizeof(int));
 
     for (int i = 0; i < graph->n_edges; i++) {
-        graph->degree[row[i]]++;
+        ++graph->degree[row[i]];
     }
 
     exclusive_prefix_sum(graph->degree, graph->offset, graph->n_nodes);
@@ -305,19 +305,19 @@ void read_mm(const char *file_name, graph_data *graph) {
     free(coo_col);
     free(coo_weight);
 
-    fprintf(stderr, "SUCCESS\n");
+    fprintf(stderr, "*** SUCCESS ***\n");
 }
 
 void read_res(const char *file_name, int n_nodes, int **res) {
     FILE *f = fopen(file_name, "r");
     if (f == NULL) {
-        ERROR("Could not open result file.\n");
+        loge("Unable to open result file.\n");
         exit(EXIT_FAILURE);
     }
 
     for (int i = 0; i < n_nodes; i++) {
         if (fscanf(f, "%d\n", &(*res)[i]) != 1) {
-            ERROR("Could not read line %d of the result file.\n", i + 1);
+            loge("Unable to read line %d of the result file.\n", i + 1);
             exit(EXIT_FAILURE);
         }
     }
@@ -339,17 +339,17 @@ void graph_free(graph_data *graph) {
 void check_result(graph_data graph, const int *res) {
     int *res_marker = malloc((size_t)graph.n_nodes * sizeof(int));
     for (int i = 0; i < graph.n_nodes; i++) {
-        res_marker[i] = INITIAL;
+        res_marker[i] = UNVISITED;
     }
 
-    fprintf(stderr, "Start Check Matching Results ... ");
+    fprintf(stderr, "Start checking graph matching results...");
 
     for (int i = 0; i < graph.n_nodes; i++) {
-        if (res_marker[i] != INITIAL) {
+        if (res_marker[i] != UNVISITED) {
             continue;
         }
 
-        // First check that i and res[i] are matched to each other and to
+        // First check that i and res[i] (res_node) are matched to each other and to
         // nothing else.
         const int res_node = res[i];
         if (res_node == UNMATCHED) {
@@ -360,16 +360,16 @@ void check_result(graph_data graph, const int *res) {
             res_marker[i] = NO_MATCHED_NODES;
             continue;
         }
-        if (res_marker[res_node] != INITIAL) {
+        if (res_marker[res_node] != UNVISITED) {
             fprintf(stderr,
                     "\nERROR: A node is matched to multiple nodes or the matched pair is not "
-                    "legal\n");
+                    "legal.\n");
             fprintf(stderr, "%d -> %d\n", i, res_node);
             fprintf(stderr, "%d -> %d\n", res_marker[res_node], res_node);
             exit(EXIT_FAILURE);
         }
         if (i != res[res_node]) {
-            fprintf(stderr, "\nERROR: Unmatched Pair [%d, %d] is found\n", i, res_node);
+            fprintf(stderr, "\nERROR: Unmatched pair [%d, %d] is found.\n", i, res_node);
             fprintf(stderr, "%d -> %d | %d -> %d\n", i, res_node, res_node, res[res_node]);
             exit(EXIT_FAILURE);
         }
@@ -387,13 +387,13 @@ void check_result(graph_data graph, const int *res) {
         }
 
         if (!is_neighbor) {
-            fprintf(stderr, "\nERROR: Matched Node %d is not one of the neighbor nodes of %d\n",
+            fprintf(stderr, "\nERROR: Matched node %d is not one of the neighbor nodes of %d.\n",
                     res_node, i);
             exit(EXIT_FAILURE);
         }
     }
 
-    fprintf(stderr, "SUCCESS\n");
+    fprintf(stderr, "*** SUCCESS ***\n");
 
     free(res_marker);
 }

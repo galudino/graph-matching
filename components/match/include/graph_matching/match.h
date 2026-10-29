@@ -26,7 +26,7 @@ extern "C" {
 #define NO_MATCHED_NODES (-2)
 
 /// Marker for a vertex that check_result() has not visited yet.
-#define INITIAL (-3)
+#define UNVISITED (-3)
 
 ///
 /// \brief      Run one-way handshaking matching on a thread pool.

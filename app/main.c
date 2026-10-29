@@ -37,7 +37,7 @@ typedef enum method_type {
 ///
 /// \return     EXIT_SUCCESS after writing the result; EXIT_FAILURE on bad arguments.
 ///
-int main(int argc, char *argv[]) {
+int main(int argc, const char *argv[]) {
     if (argc != 5 && argc != 6) {
         print_usage(argv[0]);
         return EXIT_FAILURE;
@@ -55,14 +55,14 @@ int main(int argc, char *argv[]) {
             print_usage(argv[0]);
             return EXIT_FAILURE;
         }
-        arg++;
+        ++arg;
         method = ONEWAY;
     } else if (strcmp(argv[arg], "nWays") == 0) {
         if (argc != 6) {
             print_usage(argv[0]);
             return EXIT_FAILURE;
         }
-        arg++;
+        ++arg;
         method = NWAYS;
         n_ways = atoi(argv[arg++]);
         if (n_ways < 2) {
@@ -70,7 +70,7 @@ int main(int argc, char *argv[]) {
             return EXIT_FAILURE;
         }
     } else {
-        ERROR("Undefined method.\n");
+        loge("Invalid matching algorithm (method) provided.\n");
         print_usage(argv[0]);
         return EXIT_FAILURE;
     }

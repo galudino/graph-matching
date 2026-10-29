@@ -54,7 +54,7 @@ void one_way_handshake_wrapper(int n_threads, graph_data graph, int **res) {
         td[i].new_node_to_process = new_node_to_process;
     }
 
-    fprintf(stderr, "Start One Way Matching ... ");
+    fprintf(stderr, "Start one-way matching...");
 
     struct timespec begin_time;
     struct timespec end_time;
@@ -63,7 +63,7 @@ void one_way_handshake_wrapper(int n_threads, graph_data graph, int **res) {
     for (int i = 0; i < n_threads; i++) {
         const int rc = pthread_create(&threads[i], NULL, one_way_handshake, &td[i]);
         if (rc != 0) {
-            ERROR("pthread_create failed with thread %d with return code %d\n", i, rc);
+            loge("pthread_create failed with thread %d with return code %d.\n", i, rc);
             exit(EXIT_FAILURE);
         }
     }
@@ -74,17 +74,15 @@ void one_way_handshake_wrapper(int n_threads, graph_data graph, int **res) {
         void *thread_result = NULL;
         const int rc = pthread_join(threads[i], &thread_result);
         if (rc != 0) {
-            ERROR("pthread_join failed with thread %d with return code %d\n", i, rc);
+            loge("pthread_join failed with thread %d with return code %d.\n", i, rc);
             exit(EXIT_FAILURE);
         }
         iter = (long)(intptr_t)thread_result;
     }
 
-    set_time(&end_time);
-
-    fprintf(stderr, "SUCCESS\n");
-    fprintf(stderr, "Find a maximal matching after %ld iterations\n", iter);
-    fprintf(stderr, "One Way Handshaking Matching Time: %.2f ms\n",
+    fprintf(stderr, "*** SUCCESS ***\n");
+    fprintf(stderr, "Found a maximal matching after %ld iterations.\n", iter);
+    fprintf(stderr, "One-way handshaking matching time: %.2f ms\n",
             get_time(&begin_time, &end_time));
 
     pthread_barrier_destroy(barrier);

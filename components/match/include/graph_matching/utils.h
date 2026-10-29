@@ -22,16 +22,16 @@ extern "C" {
 #endif
 
 /// Report an internal bug through err(), tagged with the calling function and line.
-#define BUG(...) err("BUG", __func__, __LINE__, __VA_ARGS__)
+#define logb(...) err("bug", __func__, __LINE__, __VA_ARGS__)
 
 /// Report an error through err(), tagged with the calling function and line.
-#define ERROR(...) err("ERROR", __func__, __LINE__, __VA_ARGS__)
+#define loge(...) err("error", __func__, __LINE__, __VA_ARGS__)
 
 /// Report a warning through err(), tagged with the calling function and line.
-#define WARNING(...) err("WARNING", __func__, __LINE__, __VA_ARGS__)
+#define logw(...) err("warning", __func__, __LINE__, __VA_ARGS__)
 
-/// Print a debug message through err(), tagged with the calling function and line.
-#define DEBUG(...) err("DEBUG", __func__, __LINE__, __VA_ARGS__)
+/// Print an info message through err(), tagged with the calling function and line.
+#define logi(...) err("info", __func__, __LINE__, __VA_ARGS__)
 
 /// When nonzero, read_mm() writes a sequential greedy matching to seq.out and exits.
 #define RUN_SEQUENTIAL 0
@@ -48,10 +48,10 @@ extern "C" {
 /// \brief      Print a tagged diagnostic message to stderr.
 ///
 /// \details    Messages longer than 1023 characters are truncated. Use the
-///             BUG, ERROR, WARNING, and DEBUG macros instead of calling
-///             this directly.
+///             logb (bug), loge (error), logw (warning), and logi (info) macros 
+///             instead of calling this directly.
 ///
-/// \param      level       Severity tag, such as "ERROR".
+/// \param      level       Severity tag, such as "error".
 /// \param      func        Name of the reporting function.
 /// \param      line        Source line of the report.
 /// \param      fmt         printf-style format string.
