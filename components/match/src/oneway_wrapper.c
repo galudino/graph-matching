@@ -2,10 +2,8 @@
 /// \file       oneway_wrapper.c
 /// \brief      Thread driver for one-way handshaking matching.
 ///
-/// \details    Adapted from onewaywrapper.c in the CS 314 (Rutgers, Fall
-///             2018) Project 3 code package.
+/// \details    Adapted from course-provided starter code.
 ///
-/// \author     Yanhao Chen (original)
 /// \author     Gemuele (Gem) Aludino
 /// \date       2026-10-29
 ///
@@ -79,6 +77,8 @@ void one_way_handshake_wrapper(int n_threads, graph_data graph, int **res) {
         }
         iter = (long)(intptr_t)thread_result;
     }
+
+    set_time(&end_time);
 
     fprintf(stderr, "*** SUCCESS ***\n");
     fprintf(stderr, "Found a maximal matching after %ld iterations.\n", iter);
