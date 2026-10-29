@@ -1,14 +1,14 @@
 ///
 /// \file       main.cpp
-/// \brief      Entry point for the starter command-line application.
+/// \brief      Entry point for the graph_matching command-line application.
 ///
-/// \author     galudino
-/// \date       2026-10-24
+/// \author     Gemuele (Gem) Aludino
+/// \date       2026-10-29
 ///
 
-#include <starter/greeting.hpp>
-#include <starter/ring_buffer.hpp>
-#include <starter/sensor.h>
+#include <graph_matching/greeting.hpp>
+#include <graph_matching/ring_buffer.hpp>
+#include <graph_matching/sensor.h>
 
 #include <cstdio>
 #include <cstdlib>
@@ -22,10 +22,10 @@
 ///             exception reaches the top level.
 ///
 int main() try {
-    std::println("{}", starter::make_greeting("Codespaces"));
+    std::println("{}", graph_matching::make_greeting("Codespaces"));
 
     // Queue a few readings from the C library, then drain them in order.
-    auto readings = starter::ring_buffer<int, 4>{};
+    auto readings = graph_matching::ring_buffer<int, 4>{};
 
     while (readings.push(sensor_read())) {
     }

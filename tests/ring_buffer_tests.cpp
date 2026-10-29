@@ -2,11 +2,11 @@
 /// \file       ring_buffer_tests.cpp
 /// \brief      Unit tests for the ring buffer library.
 ///
-/// \author     galudino
-/// \date       2026-10-24
+/// \author     Gemuele (Gem) Aludino
+/// \date       2026-10-29
 ///
 
-#include <starter/ring_buffer.hpp>
+#include <graph_matching/ring_buffer.hpp>
 
 #include <doctest/doctest.h>
 
@@ -20,7 +20,7 @@ namespace {
 /// \return     True if the buffer keeps FIFO order and rejects overflow.
 ///
 consteval bool fifo_order_holds() {
-    starter::ring_buffer<int, 3> buffer;
+    graph_matching::ring_buffer<int, 3> buffer;
 
     const bool accepted = buffer.push(1) && buffer.push(2) && buffer.push(3);
     const bool rejected = !buffer.push(4);
@@ -30,12 +30,12 @@ consteval bool fifo_order_holds() {
 }
 
 static_assert(fifo_order_holds());
-static_assert(starter::ring_buffer<int, 8>::capacity() == 8);
+static_assert(graph_matching::ring_buffer<int, 8>::capacity() == 8);
 
 } // namespace
 
 TEST_CASE("ring_buffer starts empty") {
-    starter::ring_buffer<int, 4> buffer;
+    graph_matching::ring_buffer<int, 4> buffer;
 
     CHECK(buffer.empty());
     CHECK_FALSE(buffer.full());
@@ -44,7 +44,7 @@ TEST_CASE("ring_buffer starts empty") {
 }
 
 TEST_CASE("ring_buffer rejects pushes when full") {
-    starter::ring_buffer<int, 2> buffer;
+    graph_matching::ring_buffer<int, 2> buffer;
 
     CHECK(buffer.push(1));
     CHECK(buffer.push(2));
@@ -54,7 +54,7 @@ TEST_CASE("ring_buffer rejects pushes when full") {
 }
 
 TEST_CASE("ring_buffer wraps around its storage") {
-    starter::ring_buffer<int, 3> buffer;
+    graph_matching::ring_buffer<int, 3> buffer;
 
     // Advance the head so later pushes wrap past the end of the array.
     for (int round = 0; round < 5; ++round) {
@@ -68,7 +68,7 @@ TEST_CASE("ring_buffer wraps around its storage") {
 }
 
 TEST_CASE("ring_buffer moves non-trivial element types") {
-    starter::ring_buffer<std::string, 2> buffer;
+    graph_matching::ring_buffer<std::string, 2> buffer;
 
     CHECK(buffer.push("first"));
     CHECK(buffer.push(std::string(64, 'x')));
@@ -77,7 +77,7 @@ TEST_CASE("ring_buffer moves non-trivial element types") {
 }
 
 TEST_CASE("ring_buffer clear discards every element") {
-    starter::ring_buffer<int, 3> buffer;
+    graph_matching::ring_buffer<int, 3> buffer;
 
     CHECK(buffer.push(1));
     CHECK(buffer.push(2));

@@ -1,4 +1,4 @@
-# cpp-starter
+# graph-matching
 
 A C17/C++23 CMake template for sketching projects in GitHub Codespaces,
 including from an iPad. Open a Codespace and it arrives configured and
@@ -58,7 +58,7 @@ Either way, each sketch gets its own Codespace. Then:
    [github.com/codespaces](https://github.com/codespaces), or let it
    expire.
 
-The workspace folder stays `/workspaces/cpp-starter` for the life of the
+The workspace folder stays `/workspaces/graph-matching` for the life of the
 Codespace, even after you publish. Leave it alone: renaming it while the
 Codespace is open can leave the editor without a workspace.
 
@@ -95,8 +95,8 @@ exist only inside it.
    ./scripts/rename.sh my_sketch "Your Name"
    ```
 
-   This replaces `cpp_starter`, `starter`, and `STARTER_` throughout the
-   repository and moves each `include/starter/` to `include/my_sketch/`.
+   This replaces `graph_matching`, `graph_matching`, and `GRAPH_MATCHING_` throughout the
+   repository and moves each `include/graph_matching/` to `include/my_sketch/`.
    It sets every `\author` in the file headers and the `LICENSE` copyright
    holder to the name you give, or to `git config user.name` if you leave
    it out, and sets every `\date` to today. Then it deletes itself.
@@ -119,9 +119,9 @@ exist only inside it.
 ```text
 app/                    Command-line executable (main.cpp)
 components/
-    greeting/           Compiled C++ library        starter::greeting
-    ring_buffer/        Header-only C++ library     starter::ring_buffer
-    sensor/             C library                   starter::sensor
+    greeting/           Compiled C++ library        graph_matching::greeting
+    ring_buffer/        Header-only C++ library     graph_matching::ring_buffer
+    sensor/             C library                   graph_matching::sensor
 tests/                  doctest unit tests, one file per component
 cmake/                  Shared CMake helpers (compiler warnings)
 docs/                   Doxygen configuration
@@ -129,11 +129,11 @@ scripts/rename.sh       One-time project rename
 ```
 
 Each component has its own `CMakeLists.txt` that defines a
-`starter_<name>` target with a `starter::<name>` alias, and puts its public
-headers under `include/starter/`. Link against the alias:
+`graph_matching_<name>` target with a `graph_matching::<name>` alias, and puts its public
+headers under `include/graph_matching/`. Link against the alias:
 
 ```cmake
-target_link_libraries(my_target PRIVATE starter::ring_buffer)
+target_link_libraries(my_target PRIVATE graph_matching::ring_buffer)
 ```
 
 ### Adding a component
@@ -148,7 +148,7 @@ root `CMakeLists.txt`.
 ```bash
 cmake --preset debug                    # configure
 cmake --build --preset debug            # build
-./build/debug/app/starter               # run
+./build/debug/app/graph_matching               # run
 ctest --preset debug                    # test
 ```
 
@@ -182,14 +182,14 @@ Output goes to `build/debug/docs/html/index.html`.
 
 | Target | Description |
 |--------|-------------|
-| `starter` | Command-line executable |
-| `starter_greeting` | Compiled C++ library (`starter::greeting`) |
-| `starter_ring_buffer` | Header-only C++ library (`starter::ring_buffer`) |
-| `starter_sensor` | C library (`starter::sensor`) |
-| `starter_tests` | doctest unit tests |
+| `graph_matching` | Command-line executable |
+| `graph_matching_greeting` | Compiled C++ library (`graph_matching::greeting`) |
+| `graph_matching_ring_buffer` | Header-only C++ library (`graph_matching::ring_buffer`) |
+| `graph_matching_sensor` | C library (`graph_matching::sensor`) |
+| `graph_matching_tests` | doctest unit tests |
 | `docs` | Doxygen HTML, when Doxygen is installed |
 
-`STARTER_BUILD_TESTS` and `STARTER_BUILD_DOCS` default to `ON` when this
+`GRAPH_MATCHING_BUILD_TESTS` and `GRAPH_MATCHING_BUILD_DOCS` default to `ON` when this
 is the top-level project and `OFF` when it is added to another project
 with `add_subdirectory` or `FetchContent`.
 

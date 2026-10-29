@@ -2,14 +2,14 @@
 # Application executable.
 #
 
-add_executable(starter
+add_executable(graph_matching
     main.cpp
 )
 
-target_link_libraries(starter PRIVATE
-    starter::greeting
-    starter::ring_buffer
-    starter::sensor
+target_link_libraries(graph_matching PRIVATE
+    graph_matching::greeting
+    graph_matching::ring_buffer
+    graph_matching::sensor
 )
 
-set_project_warnings(starter)
+set_project_warnings(graph_matching)

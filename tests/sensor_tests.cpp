@@ -2,11 +2,11 @@
 /// \file       sensor_tests.cpp
 /// \brief      Unit tests for the sensor library.
 ///
-/// \author     galudino
-/// \date       2026-10-24
+/// \author     Gemuele (Gem) Aludino
+/// \date       2026-10-29
 ///
 
-#include <starter/sensor.h>
+#include <graph_matching/sensor.h>
 
 #include <doctest/doctest.h>
 

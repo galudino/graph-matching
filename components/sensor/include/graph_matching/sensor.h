@@ -5,12 +5,12 @@
 /// \details    Demonstrates a C-compatible interface that can be
 ///             consumed by C++ without name mangling.
 ///
-/// \author     galudino
-/// \date       2026-10-23
+/// \author     Gemuele (Gem) Aludino
+/// \date       2026-10-29
 ///
 
-#ifndef STARTER_SENSOR_H
-#define STARTER_SENSOR_H
+#ifndef GRAPH_MATCHING_SENSOR_H
+#define GRAPH_MATCHING_SENSOR_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -27,4 +27,4 @@ int sensor_read(void);
 }
 #endif
 
-#endif // STARTER_SENSOR_H
+#endif // GRAPH_MATCHING_SENSOR_H

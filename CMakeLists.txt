@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.25)
 
 project(
-    cpp_starter
+    graph_matching
     VERSION 1.0.0
-    DESCRIPTION "Modern C/C++ command-line starter project"
+    DESCRIPTION "Modern C/C++ command-line graph_matching project"
     LANGUAGES C CXX
 )
 
@@ -11,8 +11,8 @@ project(
 # Project options
 #------------------------------------------------------------------------------
 
-option(STARTER_BUILD_TESTS "Build unit tests" ${PROJECT_IS_TOP_LEVEL})
-option(STARTER_BUILD_DOCS "Add a Doxygen 'docs' target" ${PROJECT_IS_TOP_LEVEL})
+option(GRAPH_MATCHING_BUILD_TESTS "Build unit tests" ${PROJECT_IS_TOP_LEVEL})
+option(GRAPH_MATCHING_BUILD_DOCS "Add a Doxygen 'docs' target" ${PROJECT_IS_TOP_LEVEL})
 
 #------------------------------------------------------------------------------
 # Language standards
@@ -35,10 +35,10 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 # Fail at configure time, rather than mid-build, when the standard library
 # lacks C++23 <print> (for example, GCC 13 or a stale cache from one).
 include(CheckIncludeFileCXX)
-check_include_file_cxx(print STARTER_HAS_STD_PRINT)
+check_include_file_cxx(print GRAPH_MATCHING_HAS_STD_PRINT)
 
-if(NOT STARTER_HAS_STD_PRINT)
-    unset(STARTER_HAS_STD_PRINT CACHE)
+if(NOT GRAPH_MATCHING_HAS_STD_PRINT)
+    unset(GRAPH_MATCHING_HAS_STD_PRINT CACHE)
     message(FATAL_ERROR
         "C++23 <print> was not found using ${CMAKE_CXX_COMPILER} "
         "(${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION}).\n"
@@ -69,7 +69,7 @@ add_subdirectory(app)
 # Tests
 #------------------------------------------------------------------------------
 
-if(STARTER_BUILD_TESTS)
+if(GRAPH_MATCHING_BUILD_TESTS)
     # enable_testing() rather than include(CTest): CTest adds dozens of
     # dashboard targets that clutter the CMake Tools target picker.
     enable_testing()
@@ -80,7 +80,7 @@ endif()
 # Documentation
 #------------------------------------------------------------------------------
 
-if(STARTER_BUILD_DOCS)
+if(GRAPH_MATCHING_BUILD_DOCS)
     find_package(Doxygen QUIET)
 
     if(DOXYGEN_FOUND)

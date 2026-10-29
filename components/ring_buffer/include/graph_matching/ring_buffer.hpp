@@ -5,12 +5,12 @@
 /// \details    Demonstrates a header-only class template whose whole
 ///             interface is usable in constant expressions.
 ///
-/// \author     galudino
-/// \date       2026-10-24
+/// \author     Gemuele (Gem) Aludino
+/// \date       2026-10-29
 ///
 
-#ifndef STARTER_RING_BUFFER_HPP
-#define STARTER_RING_BUFFER_HPP
+#ifndef GRAPH_MATCHING_RING_BUFFER_HPP
+#define GRAPH_MATCHING_RING_BUFFER_HPP
 
 #include <array>
 #include <concepts>
@@ -18,7 +18,7 @@
 #include <optional>
 #include <utility>
 
-namespace starter {
+namespace graph_matching {
 
 ///
 /// \brief      Fixed-capacity first-in, first-out queue.
@@ -105,6 +105,6 @@ private:
     size_type m_size = 0;                ///< Number of stored elements.
 };
 
-} // namespace starter
+} // namespace graph_matching
 
-#endif // STARTER_RING_BUFFER_HPP
+#endif // GRAPH_MATCHING_RING_BUFFER_HPP

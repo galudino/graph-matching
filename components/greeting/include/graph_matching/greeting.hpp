@@ -1,21 +1,21 @@
 ///
 /// \file       greeting.hpp
-/// \brief      Public interface for the starter C++ library.
+/// \brief      Public interface for the graph_matching C++ library.
 ///
 /// \details    Demonstrates a separately compiled C++ library and
 ///             a constexpr function defined in a header.
 ///
-/// \author     galudino
-/// \date       2026-10-23
+/// \author     Gemuele (Gem) Aludino
+/// \date       2026-10-29
 ///
 
-#ifndef STARTER_GREETING_HPP
-#define STARTER_GREETING_HPP
+#ifndef GRAPH_MATCHING_GREETING_HPP
+#define GRAPH_MATCHING_GREETING_HPP
 
 #include <string>
 #include <string_view>
 
-namespace starter {
+namespace graph_matching {
 
 ///
 /// \brief      Generates a greeting for the specified name.
@@ -37,6 +37,6 @@ namespace starter {
     return (character >= 'A' && character <= 'Z') || (character >= 'a' && character <= 'z');
 }
 
-} // namespace starter
+} // namespace graph_matching
 
-#endif // STARTER_GREETING_HPP
+#endif // GRAPH_MATCHING_GREETING_HPP

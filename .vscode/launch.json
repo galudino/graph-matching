@@ -2,11 +2,11 @@
     "version": "0.2.0",
     "inputs": [
         {
-            "id": "starterPath",
+            "id": "graph_matchingPath",
             "type": "command",
             "command": "cmake.launchTargetPath",
             "args": {
-                "targetName": "starter"
+                "targetName": "graph_matching"
             }
         },
         {
@@ -14,16 +14,16 @@
             "type": "command",
             "command": "cmake.launchTargetPath",
             "args": {
-                "targetName": "starter_tests"
+                "targetName": "graph_matching_tests"
             }
         }
     ],
     "configurations": [
         {
-            "name": "CMake: Debug starter",
+            "name": "CMake: Debug graph_matching",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${input:starterPath}",
+            "program": "${input:graph_matchingPath}",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
@@ -40,7 +40,7 @@
             ]
         },
         {
-            "name": "CMake: Debug starter_tests",
+            "name": "CMake: Debug graph_matching_tests",
             "type": "cppdbg",
             "request": "launch",
             "program": "${input:testsPath}",

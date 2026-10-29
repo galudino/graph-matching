@@ -2,26 +2,26 @@
 /// \file       greeting_tests.cpp
 /// \brief      Unit tests for the greeting library.
 ///
-/// \author     galudino
-/// \date       2026-10-24
+/// \author     Gemuele (Gem) Aludino
+/// \date       2026-10-29
 ///
 
-#include <starter/greeting.hpp>
+#include <graph_matching/greeting.hpp>
 
 #include <doctest/doctest.h>
 
 TEST_CASE("make_greeting formats the recipient's name") {
-    CHECK(starter::make_greeting("World") == "Hello, World!");
-    CHECK(starter::make_greeting("") == "Hello, !");
+    CHECK(graph_matching::make_greeting("World") == "Hello, World!");
+    CHECK(graph_matching::make_greeting("") == "Hello, !");
 }
 
 TEST_CASE("is_valid_initial accepts only ASCII letters") {
-    static_assert(starter::is_valid_initial('A'));
-    static_assert(starter::is_valid_initial('z'));
-    static_assert(!starter::is_valid_initial('7'));
+    static_assert(graph_matching::is_valid_initial('A'));
+    static_assert(graph_matching::is_valid_initial('z'));
+    static_assert(!graph_matching::is_valid_initial('7'));
 
-    CHECK(starter::is_valid_initial('M'));
-    CHECK(starter::is_valid_initial('m'));
-    CHECK_FALSE(starter::is_valid_initial('5'));
-    CHECK_FALSE(starter::is_valid_initial(' '));
+    CHECK(graph_matching::is_valid_initial('M'));
+    CHECK(graph_matching::is_valid_initial('m'));
+    CHECK_FALSE(graph_matching::is_valid_initial('5'));
+    CHECK_FALSE(graph_matching::is_valid_initial(' '));
 }

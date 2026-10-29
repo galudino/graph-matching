@@ -15,19 +15,19 @@ FetchContent_MakeAvailable(doctest)
 
 include("${doctest_SOURCE_DIR}/scripts/cmake/doctest.cmake")
 
-add_executable(starter_tests
+add_executable(graph_matching_tests
     greeting_tests.cpp
     ring_buffer_tests.cpp
     sensor_tests.cpp
 )
 
-target_link_libraries(starter_tests PRIVATE
-    starter::greeting
-    starter::ring_buffer
-    starter::sensor
+target_link_libraries(graph_matching_tests PRIVATE
+    graph_matching::greeting
+    graph_matching::ring_buffer
+    graph_matching::sensor
     doctest::doctest_with_main
 )
 
-set_project_warnings(starter_tests)
+set_project_warnings(graph_matching_tests)
 
-doctest_discover_tests(starter_tests)
+doctest_discover_tests(graph_matching_tests)

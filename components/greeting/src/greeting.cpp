@@ -1,17 +1,17 @@
 ///
 /// \file       greeting.cpp
-/// \brief      Implementation of the starter C++ library.
+/// \brief      Implementation of the graph_matching C++ library.
 ///
-/// \author     galudino
-/// \date       2026-10-23
+/// \author     Gemuele (Gem) Aludino
+/// \date       2026-10-29
 ///
 
-#include <starter/greeting.hpp>
+#include <graph_matching/greeting.hpp>
 
 #include <string>
 #include <string_view>
 
-namespace starter {
+namespace graph_matching {
 
 std::string make_greeting(std::string_view name) {
     auto greeting = std::string{"Hello, "};
@@ -21,4 +21,4 @@ std::string make_greeting(std::string_view name) {
     return greeting;
 }
 
-} // namespace starter
+} // namespace graph_matching
