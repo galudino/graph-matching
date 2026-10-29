@@ -20,7 +20,7 @@
     ],
     "configurations": [
         {
-            "name": "CMake: Debug graph_matching",
+            "name": "CMake: Debug graph_matching (one-way)",
             "type": "cppdbg",
             "request": "launch",
             "program": "${input:graph_matchingPath}",
@@ -28,6 +28,32 @@
                 "${workspaceFolder}/data/test.mtx",
                 "${workspaceFolder}/build/test.out",
                 "oneWay",
+                "2"
+            ],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "miDebuggerPath": "/usr/bin/gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable GDB pretty printing",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ]
+        },
+        {
+            "name": "CMake: Debug graph_matching (N-way)",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${input:graph_matchingPath}",
+            "args": [
+                "${workspaceFolder}/data/test.mtx",
+                "${workspaceFolder}/build/test.out",
+                "nWays",
+                "2",
                 "2"
             ],
             "stopAtEntry": false,

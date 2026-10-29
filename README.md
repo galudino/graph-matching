@@ -1,36 +1,32 @@
 # graph-matching
 
 Parallel graph matching with one-way and N-way handshaking, using POSIX
-threads. This revisits Project 3 of CS 314 (Principles of Programming
-Languages, Rutgers, Fall 2018): the algorithm is implemented in C first, as
-the assignment asks, then refactored to C++.
-
-The assignment is in [docs/CS314_Fall_2018_Project3.pdf](docs/CS314_Fall_2018_Project3.pdf).
+threads. This revisits a course project: the algorithm is implemented in C
+first, as the assignment asks, then refactored to C++.
 
 ## The assignment
 
-Three files are the assignment; everything else is the course's harness:
+Three files are the assignment; everything else is the starter code's harness:
 
-| File | Functions | Spec section |
-|------|-----------|--------------|
-| `components/match/src/oneway.c` | `extend_one_hand`, `check_handshaking` | 2.3 |
-| `components/match/src/filter.c` | `count_unmatched_vertices`, `update_remain_nodes_index` | 2.5 |
-| `components/match/src/nways.c` | `generate_n_way_graph`, `prune_n_way_graph` (extra credit) | 2.4 |
+| File | Functions |
+|------|-----------|
+| `components/match/src/oneway.c` | `extend_one_hand`, `check_handshaking` |
+| `components/match/src/filter.c` | `count_unmatched_vertices`, `update_remain_nodes_index` |
+| `components/match/src/nways.c` | `generate_n_way_graph`, `prune_n_way_graph` (extra credit) |
 
 Each function is declared, with its inputs and outputs, in the matching header
-under `components/match/include/graph_matching/`. Section 2.2 covers how
-work is divided between threads.
+under `components/match/include/graph_matching/`.
 
 The files start as empty functions so that the project builds. Until they are
 implemented, the program hangs instead of producing a matching: the filter
 step never reports that the work list is empty.
 
-### Names compared with the spec
+### Names compared with the starter code
 
-The code uses snake_case throughout, so names differ from the spec's
+The code uses snake_case throughout, so names differ from the starter code's
 camelCase:
 
-| Spec | Here |
+| Starter code | Here |
 |------|------|
 | `GraphData`, `nNodes`, `nEdges` | `graph_data`, `n_nodes`, `n_edges` |
 | `nodeToProcess`, `newNodeToProcess` | `node_to_process`, `new_node_to_process` |
@@ -62,13 +58,53 @@ Run with the same arguments as the original `match` program:
 The result has one line per vertex: its partner, or `-2`
 (`NO_MATCHED_NODES`) if it has none.
 
-In VS Code, the **CMake: Debug graph_matching** launch configuration runs
-the one-way method on `data/test.mtx` with 2 threads.
+### From VS Code
+
+Run these from the Command Palette with **Tasks: Run Task**. Each one builds
+first, then asks for the matrix, number of threads, and (for N-way) hands per
+vertex:
+
+| Task | Does |
+|------|------|
+| **Run: One-Way Matching** | Writes the result to `<build dir>/one_way.out` |
+| **Run: N-Way Matching** | Writes the result to `<build dir>/n_ways.out` |
+| **Run: Compare One-Way with Reference** | Runs `compare_with_reference.sh` on your build |
+| **Run: Compare N-Way with Reference** | The same, for N-way |
+| **Data: Fetch Test Matrices** | Runs `fetch_matrices.sh` for all six matrices |
+
+To stop a run that hangs, use the trash-can icon on its terminal.
+
+To debug, use the **CMake: Debug graph_matching (one-way)** or **(N-way)**
+launch configuration. Both run on `data/test.mtx` with 2 threads; the N-way
+one uses 2 hands.
+
+### From CMake
+
+The `run_one_way` and `run_n_ways` targets build the program and run it:
+
+```bash
+cmake --build --preset debug --target run_one_way
+cmake --build --preset debug --target run_n_ways
+```
+
+They write `one_way.out` or `n_ways.out` in the build directory. To change
+the input, set these when configuring:
+
+```bash
+cmake --preset debug \
+    -DGRAPH_MATCHING_RUN_MATRIX=data/cant/cant.mtx \
+    -DGRAPH_MATCHING_RUN_THREADS=8 \
+    -DGRAPH_MATCHING_RUN_HANDS=3
+```
+
+CMake turns a relative `GRAPH_MATCHING_RUN_MATRIX` into an absolute path from
+the directory you run `cmake` in, which is the repository root when you use
+presets.
 
 ## Test matrices
 
-`data/test.mtx` is the 9-vertex example from the code package. The six
-matrices from the spec come from the SuiteSparse Matrix Collection:
+`data/test.mtx` is a 9-vertex example. Six larger test matrices come from the
+SuiteSparse Matrix Collection:
 
 ```bash
 ./scripts/fetch_matrices.sh              # all six, smallest first
@@ -82,7 +118,7 @@ for current links.
 
 ## Checking against the reference
 
-`reference/match-sol` is the reference binary from the code package (x86-64
+`reference/match-sol` is the reference binary from the starter code (x86-64
 Linux). To run it and your build on the same input and compare the results:
 
 ```bash
@@ -96,23 +132,23 @@ differ.
 ## Layout
 
 ```text
-app/main.c                  Command-line program (course harness)
+app/main.c                  Command-line program (harness)
 components/match/           Matching library
     include/graph_matching/   Headers
     src/oneway.c              Assignment
     src/filter.c              Assignment
     src/nways.c               Assignment (extra credit)
-    src/*_wrapper.c           Thread drivers (course harness)
-    src/utils.c, src/sort.c   Graph I/O and helpers (course harness)
+    src/*_wrapper.c           Thread drivers (harness)
+    src/utils.c, src/sort.c   Graph I/O and helpers (harness)
 third_party/mmio/           NIST Matrix Market I/O library, unchanged
 tests/                      doctest unit tests for the harness
 data/test.mtx               Small example matrix
-docs/                       Assignment spec; Doxygen configuration
+docs/                       Doxygen configuration
 reference/match-sol         Reference binary
 scripts/                    Matrix download and reference comparison
 ```
 
-## Changes from the original code package
+## Changes from the starter code
 
 The harness behaves the same as the original: on `test.mtx` and on generated
 matrices with ties, duplicate entries, self-loops, and pattern-only values,
@@ -133,7 +169,7 @@ matching. The differences:
 
 ## Credits and license
 
-The harness, spec, test matrix, and reference binary are from the CS 314
-Fall 2018 Project 3 code package (README author: Yanhao Chen). `mmio` is
-from NIST's [Matrix Market](https://math.nist.gov/MatrixMarket/). The MIT
-license in [LICENSE](LICENSE) covers this project's own code only.
+The harness, test matrix, and reference binary are adapted from
+course-provided starter code. `mmio` is from NIST's
+[Matrix Market](https://math.nist.gov/MatrixMarket/). The MIT license in
+[LICENSE](LICENSE) covers this project's own code only.
