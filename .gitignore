@@ -1,0 +1,45 @@
+# Build trees (presets build into build/<preset>)
+/build/
+/out/
+cmake-build-*/
+
+# Local CMake overrides
+CMakeUserPresets.json
+
+# Objects, libraries, executables
+*.o
+*.obj
+*.a
+*.lib
+*.so
+*.so.*
+*.dylib
+*.dll
+*.exe
+*.out
+
+# Debug info, coverage, profiling
+*.dwo
+*.pdb
+*.gcda
+*.gcno
+*.gcov
+*.profraw
+*.profdata
+
+# Tool caches (clangd index lives in .cache/)
+.cache/
+Testing/
+compile_commands.json
+
+# Editors and OS
+.DS_Store
+*.swp
+*.swo
+*~
+.vs/
+.idea/
+
+# Python helpers
+__pycache__/
+.venv/

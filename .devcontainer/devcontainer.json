@@ -1,0 +1,28 @@
+{
+    "name": "C/C++ Development",
+    "build": {
+        "dockerfile": "Dockerfile",
+        "context": "."
+    },
+    "containerEnv": {
+        "CC": "gcc-14",
+        "CXX": "g++-14"
+    },
+    // Configure and build once at creation so IntelliSense, the test
+    // explorer, and the run/debug buttons work as soon as the editor opens.
+    "postCreateCommand": "cmake --preset debug && cmake --build --preset debug",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-vscode.cpptools",
+                "ms-vscode.cmake-tools",
+                "bierner.markdown-preview-github-styles"
+            ],
+            "settings": {
+                // Use the container's clang-format so formatting matches CI.
+                "C_Cpp.clang_format_path": "/usr/bin/clang-format"
+            }
+        }
+    },
+    "remoteUser": "vscode"
+}

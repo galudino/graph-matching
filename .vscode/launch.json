@@ -1,0 +1,56 @@
+{
+    "version": "0.2.0",
+    "inputs": [
+        {
+            "id": "starterPath",
+            "type": "command",
+            "command": "cmake.launchTargetPath",
+            "args": {
+                "targetName": "starter"
+            }
+        },
+        {
+            "id": "testsPath",
+            "type": "command",
+            "command": "cmake.launchTargetPath",
+            "args": {
+                "targetName": "starter_tests"
+            }
+        }
+    ],
+    "configurations": [
+        {
+            "name": "CMake: Debug starter",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${input:starterPath}",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "miDebuggerPath": "/usr/bin/gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable GDB pretty printing",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ]
+        },
+        {
+            "name": "CMake: Debug starter_tests",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${input:testsPath}",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "miDebuggerPath": "/usr/bin/gdb"
+        }
+    ]
+}

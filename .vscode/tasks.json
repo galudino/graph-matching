@@ -1,0 +1,84 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "CMake: Configure",
+            "type": "cmake",
+            "command": "configure",
+            "preset": "${command:cmake.activeConfigurePresetName}",
+            "problemMatcher": []
+        },
+        {
+            "label": "CMake: Build",
+            "type": "cmake",
+            "command": "build",
+            "preset": "${command:cmake.activeBuildPresetName}",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "CMake: Clean",
+            "type": "cmake",
+            "command": "clean",
+            "preset": "${command:cmake.activeBuildPresetName}",
+            "problemMatcher": []
+        },
+        {
+            "label": "CMake: Clean Rebuild",
+            "type": "cmake",
+            "command": "cleanRebuild",
+            "preset": "${command:cmake.activeBuildPresetName}",
+            "problemMatcher": []
+        },
+        {
+            "label": "CMake: Run",
+            "type": "process",
+            "command": "${command:cmake.launchTargetPath}",
+            "dependsOn": "CMake: Build",
+            "problemMatcher": []
+        },
+        {
+            "label": "CMake: Test",
+            "type": "cmake",
+            "command": "ctest",
+            "preset": "${command:cmake.activeTestPresetName}",
+            "dependsOn": "CMake: Build",
+            "problemMatcher": []
+        },
+        {
+            "label": "CMake: Documentation",
+            "type": "process",
+            "command": "cmake",
+            "args": [
+                "--build",
+                "${command:cmake.buildDirectory}",
+                "--target",
+                "docs"
+            ],
+            "dependsOn": "CMake: Configure",
+            "problemMatcher": []
+        },
+        {
+            "label": "Clang: Format Check",
+            "type": "shell",
+            "command": "find app components tests -type f \\( -name '*.c' -o -name '*.cpp' -o -name '*.h' -o -name '*.hpp' \\) -exec clang-format --dry-run --Werror {} +",
+            "problemMatcher": []
+        },
+        {
+            "label": "Clang: Format All",
+            "type": "shell",
+            "command": "find app components tests -type f \\( -name '*.c' -o -name '*.cpp' -o -name '*.h' -o -name '*.hpp' \\) -exec clang-format -i {} +",
+            "problemMatcher": []
+        },
+        {
+            "label": "Clang: Tidy",
+            "type": "shell",
+            "command": "run-clang-tidy -quiet -p '${command:cmake.buildDirectory}' '^${workspaceFolder}/(app|components|tests)/.*\\.(c|cpp)$'",
+            "dependsOn": "CMake: Configure",
+            "problemMatcher": []
+        }
+    ]
+}

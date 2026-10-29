@@ -1,0 +1,76 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: ${{ matrix.compiler.name }} / ${{ matrix.preset }}
+    runs-on: ubuntu-24.04
+
+    strategy:
+      fail-fast: false
+      matrix:
+        compiler:
+          - { name: gcc-14, cc: gcc-14, cxx: g++-14 }
+          - { name: clang-18, cc: clang-18, cxx: clang++-18 }
+        preset: [debug, release, asan-ubsan]
+
+    env:
+      CC: ${{ matrix.compiler.cc }}
+      CXX: ${{ matrix.compiler.cxx }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ninja-build g++-14 clang-18 libclang-rt-18-dev
+
+      - name: Configure
+        run: cmake --preset ${{ matrix.preset }} -DCMAKE_COMPILE_WARNING_AS_ERROR=ON
+
+      - name: Build
+        run: cmake --build --preset ${{ matrix.preset }}
+
+      - name: Test
+        run: ctest --preset ${{ matrix.preset }}
+
+  lint:
+    name: clang-format / clang-tidy
+    runs-on: ubuntu-24.04
+
+    env:
+      CC: clang-18
+      CXX: clang++-18
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ninja-build g++-14 clang-18 clang-format-18 clang-tidy-18
+
+      - name: Check formatting
+        run: |
+          git ls-files '*.c' '*.cpp' '*.h' '*.hpp' \
+            | xargs clang-format-18 --dry-run --Werror
+
+      - name: Configure
+        run: cmake --preset debug
+
+      - name: Run clang-tidy
+        run: |
+          run-clang-tidy-18 -quiet -warnings-as-errors='*' -clang-tidy-binary clang-tidy-18 -p build/debug \
+            "^${GITHUB_WORKSPACE}/(app|components|tests)/.*\.(c|cpp)$"
