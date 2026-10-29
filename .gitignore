@@ -43,3 +43,7 @@ compile_commands.json
 # Python helpers
 __pycache__/
 .venv/
+
+# Downloaded test matrices (scripts/fetch_matrices.sh); data/test.mtx is tracked
+/data/*
+!/data/test.mtx
