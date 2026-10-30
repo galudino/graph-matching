@@ -17,6 +17,26 @@ but does not match yet:
 ./build/debug/bin/graph_matching_cpp --help
 ```
 
+### From VS Code
+
+The same tasks and launch configurations as the C program, for
+`graph_matching_cpp`. Run the tasks with **Tasks: Run Task**; they build
+first, then ask for the matrix, number of threads, and (for N-way) hands per
+vertex:
+
+| Task | Does |
+|------|------|
+| **Run (C++): One-Way Matching** | Writes the result to `<build dir>/one_way_cpp.out` |
+| **Run (C++): N-Way Matching** | Writes the result to `<build dir>/n_ways_cpp.out` |
+| **Run (C++): Greedy Matching** | Writes the result to `<build dir>/greedy_cpp.out` |
+| **Run (C++): Compare One-Way with Reference** | Runs `compare_with_reference.sh` on this program |
+| **Run (C++): Compare N-Way with Reference** | The same, for N-way |
+| **CMake: Documentation (C++)** | Builds the API reference |
+
+To debug, use the **CMake: Debug graph_matching_cpp (one-way)** or
+**(N-way)** launch configuration, which run on `data/test.mtx` with 2
+threads.
+
 **The API reference** is at
 **https://galudino.github.io/graph-matching/cpp/**. To build it locally, run
 `cmake --build --preset debug --target docs_cpp` and open

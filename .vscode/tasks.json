@@ -119,6 +119,91 @@
             "problemMatcher": []
         },
         {
+            "label": "Run (C++): One-Way Matching",
+            "type": "process",
+            "command": "${command:cmake.buildDirectory}/bin/graph_matching_cpp",
+            "args": [
+                "${input:matrix}",
+                "${command:cmake.buildDirectory}/one_way_cpp.out",
+                "one-way",
+                "${input:threads}"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "dependsOn": "CMake: Build",
+            "problemMatcher": []
+        },
+        {
+            "label": "Run (C++): N-Way Matching",
+            "type": "process",
+            "command": "${command:cmake.buildDirectory}/bin/graph_matching_cpp",
+            "args": [
+                "${input:matrix}",
+                "${command:cmake.buildDirectory}/n_ways_cpp.out",
+                "n-way",
+                "${input:hands}",
+                "${input:threads}"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "dependsOn": "CMake: Build",
+            "problemMatcher": []
+        },
+        {
+            "label": "Run (C++): Greedy Matching",
+            "type": "process",
+            "command": "${command:cmake.buildDirectory}/bin/graph_matching_cpp",
+            "args": [
+                "${input:matrix}",
+                "${command:cmake.buildDirectory}/greedy_cpp.out",
+                "greedy"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "dependsOn": "CMake: Build",
+            "problemMatcher": []
+        },
+        {
+            "label": "Run (C++): Compare One-Way with Reference",
+            "type": "process",
+            "command": "${workspaceFolder}/scripts/compare_with_reference.sh",
+            "args": [
+                "${input:matrix}",
+                "one-way",
+                "${input:threads}"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}",
+                "env": {
+                    "GRAPH_MATCHING_BIN": "${command:cmake.buildDirectory}/bin/graph_matching_cpp"
+                }
+            },
+            "dependsOn": "CMake: Build",
+            "problemMatcher": []
+        },
+        {
+            "label": "Run (C++): Compare N-Way with Reference",
+            "type": "process",
+            "command": "${workspaceFolder}/scripts/compare_with_reference.sh",
+            "args": [
+                "${input:matrix}",
+                "n-way",
+                "${input:hands}",
+                "${input:threads}"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}",
+                "env": {
+                    "GRAPH_MATCHING_BIN": "${command:cmake.buildDirectory}/bin/graph_matching_cpp"
+                }
+            },
+            "dependsOn": "CMake: Build",
+            "problemMatcher": []
+        },
+        {
             "label": "Data: Generate Test Matrices",
             "type": "cmake",
             "command": "build",
@@ -164,6 +249,19 @@
                 "${command:cmake.buildDirectory}",
                 "--target",
                 "docs_c"
+            ],
+            "dependsOn": "CMake: Configure",
+            "problemMatcher": []
+        },
+        {
+            "label": "CMake: Documentation (C++)",
+            "type": "process",
+            "command": "cmake",
+            "args": [
+                "--build",
+                "${command:cmake.buildDirectory}",
+                "--target",
+                "docs_cpp"
             ],
             "dependsOn": "CMake: Configure",
             "problemMatcher": []

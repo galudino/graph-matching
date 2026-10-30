@@ -10,6 +10,14 @@
             }
         },
         {
+            "id": "graphMatchingCppPath",
+            "type": "command",
+            "command": "cmake.launchTargetPath",
+            "args": {
+                "targetName": "graph_matching_cpp"
+            }
+        },
+        {
             "id": "cTestsPath",
             "type": "command",
             "command": "cmake.launchTargetPath",
@@ -60,6 +68,57 @@
             "args": [
                 "${workspaceFolder}/data/test.mtx",
                 "${workspaceFolder}/build/test_c.out",
+                "n-way",
+                "2",
+                "2"
+            ],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "miDebuggerPath": "/usr/bin/gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable GDB pretty printing",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ]
+        },
+        {
+            "name": "CMake: Debug graph_matching_cpp (one-way)",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${input:graphMatchingCppPath}",
+            "args": [
+                "${workspaceFolder}/data/test.mtx",
+                "${workspaceFolder}/build/test_cpp.out",
+                "one-way",
+                "2"
+            ],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "miDebuggerPath": "/usr/bin/gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable GDB pretty printing",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ]
+        },
+        {
+            "name": "CMake: Debug graph_matching_cpp (N-way)",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${input:graphMatchingCppPath}",
+            "args": [
+                "${workspaceFolder}/data/test.mtx",
+                "${workspaceFolder}/build/test_cpp.out",
                 "n-way",
                 "2",
                 "2"
