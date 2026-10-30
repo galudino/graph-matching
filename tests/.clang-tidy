@@ -1,0 +1,14 @@
+# The tests are C++, but include the C components' headers, and clang-tidy
+# judges a header by the configuration of the file that includes it. Turn off
+# the C++-only advice for those headers, and allow the logging macros. Test
+# helpers also take runs of same-typed parameters, such as thread and hand
+# counts.
+InheritParentConfig: true
+Checks: >
+  -modernize-use-using,
+  -modernize-macro-to-enum,
+  -performance-enum-size,
+  -bugprone-easily-swappable-parameters
+CheckOptions:
+  - key: readability-identifier-naming.MacroDefinitionIgnoredRegexp
+    value: '^log[dewi]$'
