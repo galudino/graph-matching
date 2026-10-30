@@ -49,7 +49,7 @@ typedef struct edge_list {
 /// \brief      Allocate an edge list.
 ///
 /// \details    The edges' contents are unspecified until written. On
-///             failure, self is left empty and safe to destroy.
+///             failure, self is left empty and safe to pass to edge_list_deinit().
 ///
 /// \param      self        Edge list to initialize.
 /// \param      length      Number of edges; at least 0.
@@ -63,7 +63,7 @@ status_code edge_list_init(edge_list *self, int length);
 ///
 /// \param      self        Edge list to release; left empty.
 ///
-void edge_list_destroy(edge_list *self);
+void edge_list_deinit(edge_list *self);
 
 ///
 /// \brief      Sort the edges in place.

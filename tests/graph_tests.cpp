@@ -62,15 +62,15 @@ status_code build(graph &g, int vertex_count, std::span<const edge> edges) {
     std::ranges::copy(edges, list.edges);
 
     const status_code status = graph_init_from_edges(&g, vertex_count, &list);
-    edge_list_destroy(&list);
+    edge_list_deinit(&list);
     return status;
 }
 
 } // namespace
 
-TEST_CASE("graph_read_matrix_market builds sorted adjacency arrays from test.mtx") {
+TEST_CASE("graph_init_from_matrix_market builds sorted adjacency arrays from test.mtx") {
     graph g;
-    REQUIRE(graph_read_matrix_market(&g, GRAPH_MATCHING_DATA_DIR "/test.mtx") == STATUS_OK);
+    REQUIRE(graph_init_from_matrix_market(&g, GRAPH_MATCHING_DATA_DIR "/test.mtx") == STATUS_OK);
 
     CHECK(g.vertex_count == 9);
     CHECK(g.edge_count == 12);
@@ -93,7 +93,7 @@ TEST_CASE("graph_read_matrix_market builds sorted adjacency arrays from test.mtx
     CHECK(weights(g, 4) == std::vector{4.0, 4.0, 3.0, 3.0});
     CHECK(graph_degree(&g, 4) == 4);
 
-    graph_destroy(&g);
+    graph_deinit(&g);
     CHECK(g.neighbors == nullptr);
     CHECK(g.vertex_count == 0);
 }
@@ -115,7 +115,7 @@ TEST_CASE("graph_init_from_edges drops self-loops and keeps the heaviest duplica
     CHECK(neighbors(g, 1) == std::vector{0, 2});
     CHECK(neighbors(g, 2) == std::vector{1});
 
-    graph_destroy(&g);
+    graph_deinit(&g);
 }
 
 TEST_CASE("graph_init_from_edges keeps isolated vertices and rejects out-of-range endpoints") {
@@ -126,43 +126,43 @@ TEST_CASE("graph_init_from_edges keeps isolated vertices and rejects out-of-rang
     REQUIRE(build(g, 4, inside) == STATUS_OK);
     CHECK(g.vertex_count == 4);
     CHECK(graph_degree(&g, 3) == 0);
-    graph_destroy(&g);
+    graph_deinit(&g);
 
     CHECK(build(g, 3, outside) == STATUS_INVALID_ARGUMENT);
     CHECK(g.neighbors == nullptr);
-    graph_destroy(&g);
+    graph_deinit(&g);
 }
 
-TEST_CASE("graph_read_matrix_market reads pattern matrices with weight 1") {
+TEST_CASE("graph_init_from_matrix_market reads pattern matrices with weight 1") {
     const graph_matching::testing::temporary_file file(
         "graph_matching_pattern.mtx",
         "%%MatrixMarket matrix coordinate pattern symmetric\n3 3 2\n2 1\n3 2\n");
 
     graph g;
-    REQUIRE(graph_read_matrix_market(&g, file.c_str()) == STATUS_OK);
+    REQUIRE(graph_init_from_matrix_market(&g, file.c_str()) == STATUS_OK);
     CHECK(g.edge_count == 2);
     CHECK(weights(g, 1) == std::vector{1.0, 1.0});
-    graph_destroy(&g);
+    graph_deinit(&g);
 }
 
-TEST_CASE("graph_read_matrix_market reports unreadable and malformed files") {
+TEST_CASE("graph_init_from_matrix_market reports unreadable and malformed files") {
     graph g;
-    CHECK(graph_read_matrix_market(&g, "/nonexistent/graph.mtx") == STATUS_FILE_ERROR);
+    CHECK(graph_init_from_matrix_market(&g, "/nonexistent/graph.mtx") == STATUS_FILE_ERROR);
 
     const graph_matching::testing::temporary_file no_banner("graph_matching_no_banner.mtx",
                                                             "3 3 1\n2 1 1\n");
-    CHECK(graph_read_matrix_market(&g, no_banner.c_str()) == STATUS_PARSE_ERROR);
+    CHECK(graph_init_from_matrix_market(&g, no_banner.c_str()) == STATUS_PARSE_ERROR);
 
     const graph_matching::testing::temporary_file out_of_range(
         "graph_matching_out_of_range.mtx",
         "%%MatrixMarket matrix coordinate real general\n3 3 1\n4 1 1\n");
-    CHECK(graph_read_matrix_market(&g, out_of_range.c_str()) == STATUS_PARSE_ERROR);
+    CHECK(graph_init_from_matrix_market(&g, out_of_range.c_str()) == STATUS_PARSE_ERROR);
 
     const graph_matching::testing::temporary_file truncated(
         "graph_matching_truncated.mtx",
         "%%MatrixMarket matrix coordinate real general\n3 3 2\n2 1 1\n");
-    CHECK(graph_read_matrix_market(&g, truncated.c_str()) == STATUS_PARSE_ERROR);
+    CHECK(graph_init_from_matrix_market(&g, truncated.c_str()) == STATUS_PARSE_ERROR);
 
     CHECK(g.neighbors == nullptr);
-    graph_destroy(&g);
+    graph_deinit(&g);
 }

@@ -97,7 +97,7 @@ static int *allocate_ints(size_t count) { return malloc((count > 0 ? count : 1) 
 ///
 /// \param      shared      Shared state to release.
 ///
-static void handshake_shared_destroy(handshake_shared *const shared) {
+static void handshake_shared_deinit(handshake_shared *const shared) {
     free(shared->strongest_neighbor);
     free(shared->candidates);
     free(shared->candidate_counts);
@@ -140,7 +140,7 @@ status_code handshake_match(matching *const self, const graph *input_graph,
                             (shared.candidates != NULL && shared.candidate_counts != NULL));
 
     if (!allocated) {
-        handshake_shared_destroy(&shared);
+        handshake_shared_deinit(&shared);
         free(worklist_a);
         free(worklist_b);
         free(threads);
@@ -188,7 +188,7 @@ status_code handshake_match(matching *const self, const graph *input_graph,
     }
 
     pthread_barrier_destroy(&shared.barrier);
-    handshake_shared_destroy(&shared);
+    handshake_shared_deinit(&shared);
     free(worklist_a);
     free(worklist_b);
     free(threads);

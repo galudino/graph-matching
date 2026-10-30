@@ -41,7 +41,7 @@ status_code matching_init(matching *const self, int vertex_count) {
     return STATUS_OK;
 }
 
-void matching_destroy(matching *const self) {
+void matching_deinit(matching *const self) {
     free(self->partners);
     self->partners = NULL;
     self->vertex_count = 0;
@@ -90,7 +90,7 @@ status_code matching_run_greedy(matching *const self, const graph *matched_graph
         }
     }
 
-    edge_list_destroy(&edges);
+    edge_list_deinit(&edges);
     return STATUS_OK;
 }
 
@@ -219,7 +219,7 @@ status_code matching_write(const matching *const self, const char *path) {
     return fclose(file) == 0 ? STATUS_OK : STATUS_FILE_ERROR;
 }
 
-status_code matching_read(matching *const self, const char *path, int vertex_count) {
+status_code matching_init_from_file(matching *const self, const char *path, int vertex_count) {
     status_code status = matching_init(self, vertex_count);
     if (status != STATUS_OK) {
         return status;
@@ -227,7 +227,7 @@ status_code matching_read(matching *const self, const char *path, int vertex_cou
 
     FILE *file = fopen(path, "r");
     if (file == NULL) {
-        matching_destroy(self);
+        matching_deinit(self);
         return STATUS_FILE_ERROR;
     }
 
@@ -241,7 +241,7 @@ status_code matching_read(matching *const self, const char *path, int vertex_cou
     fclose(file);
 
     if (status != STATUS_OK) {
-        matching_destroy(self);
+        matching_deinit(self);
     }
     return status;
 }

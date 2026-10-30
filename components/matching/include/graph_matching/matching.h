@@ -42,7 +42,7 @@ typedef struct matching {
 ///
 /// \brief      Allocate a matching with every vertex VERTEX_UNMATCHED.
 ///
-/// \details    On failure, self is left empty and safe to destroy.
+/// \details    On failure, self is left empty and safe to pass to matching_deinit().
 ///
 /// \param      self            Matching to initialize.
 /// \param      vertex_count    Number of vertices; at least 0.
@@ -56,7 +56,7 @@ status_code matching_init(matching *self, int vertex_count);
 ///
 /// \param      self        Matching to release; left empty.
 ///
-void matching_destroy(matching *self);
+void matching_deinit(matching *self);
 
 ///
 /// \brief      Match greedily: take edges heaviest first while both endpoints are free.
@@ -135,7 +135,7 @@ status_code matching_write(const matching *self, const char *path);
 ///
 /// \brief      Read a matching written by matching_write().
 ///
-/// \details    On failure, self is left empty and safe to destroy.
+/// \details    On failure, self is left empty and safe to pass to matching_deinit().
 ///
 /// \param      self            Matching to initialize.
 /// \param      path            Path of the file to read.
@@ -144,7 +144,7 @@ status_code matching_write(const matching *self, const char *path);
 /// \return     STATUS_OK, STATUS_INVALID_ARGUMENT, STATUS_FILE_ERROR,
 ///             STATUS_PARSE_ERROR, or STATUS_OUT_OF_MEMORY.
 ///
-status_code matching_read(matching *self, const char *path, int vertex_count);
+status_code matching_init_from_file(matching *self, const char *path, int vertex_count);
 
 ///
 /// \brief      Write each vertex's partner or status in readable form.

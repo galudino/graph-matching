@@ -8,6 +8,7 @@
 
 #include <graph_matching/edge_list.h>
 
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdlib.h>
 
@@ -30,114 +31,103 @@ status_code edge_list_init(edge_list *const self, int length) {
     return STATUS_OK;
 }
 
-void edge_list_destroy(edge_list *const self) {
+void edge_list_deinit(edge_list *const self) {
     free(self->edges);
     self->edges = NULL;
     self->length = 0;
 }
 
 ///
-/// \brief      Three-way comparison of two ints, for qsort().
+/// \brief      Check whether one edge sorts before another.
 ///
-/// \param      a           First value.
-/// \param      b           Second value.
+/// \details    Vertex IDs compare ascending and weights descending, in the
+///             key order given. Inlined into the sort's inner loops, where it
+///             runs hundreds of millions of times on large graphs; calling a
+///             comparator through qsort() made reading graphs about twice as
+///             slow.
 ///
-/// \return     Negative, zero, or positive as a is less than, equal to, or
-///             greater than b.
+/// \param      a           First edge.
+/// \param      b           Second edge.
+/// \param      order       Key order.
 ///
-static int compare_ints(int a, int b) { return (a > b) - (a < b); }
+/// \return     True if a sorts strictly before b.
+///
+static inline bool edge_before(const edge *a, const edge *b, edge_order order) {
+    switch (order) {
+    case EDGE_ORDER_SOURCE_WEIGHT_TARGET:
+        if (a->source != b->source) {
+            return a->source < b->source;
+        }
+        if (a->weight != b->weight) {
+            return a->weight > b->weight;
+        }
+        return a->target < b->target;
 
-///
-/// \brief      Three-way comparison of two weights, heaviest first.
-///
-/// \param      a           First weight.
-/// \param      b           Second weight.
-///
-/// \return     Negative if a is heavier than b, positive if lighter, zero if equal.
-///
-static int compare_weights_descending(double a, double b) { return (a < b) - (a > b); }
+    case EDGE_ORDER_WEIGHT_SOURCE_TARGET:
+        if (a->weight != b->weight) {
+            return a->weight > b->weight;
+        }
+        if (a->source != b->source) {
+            return a->source < b->source;
+        }
+        return a->target < b->target;
 
-///
-/// \brief      Order edges by source, then target, then heaviest first.
-///
-/// \param      left        First edge, as qsort() passes it.
-/// \param      right       Second edge.
-///
-/// \return     Negative, zero, or positive as left sorts before, with, or after right.
-///
-static int compare_source_target_weight(const void *left, const void *right) {
-    const edge *a = left;
-    const edge *b = right;
-
-    int order = compare_ints(a->source, b->source);
-    if (order == 0) {
-        order = compare_ints(a->target, b->target);
+    case EDGE_ORDER_SOURCE_TARGET_WEIGHT:
+    default:
+        if (a->source != b->source) {
+            return a->source < b->source;
+        }
+        if (a->target != b->target) {
+            return a->target < b->target;
+        }
+        return a->weight > b->weight;
     }
-    if (order == 0) {
-        order = compare_weights_descending(a->weight, b->weight);
-    }
-    return order;
 }
 
 ///
-/// \brief      Order edges by source, then heaviest first, then target.
+/// \brief      Quicksort edges[left] through edges[right] in place.
 ///
-/// \param      left        First edge, as qsort() passes it.
-/// \param      right       Second edge.
+/// \details    Partitions around the middle edge, then recurses into the
+///             smaller part and loops on the larger, so the stack depth stays
+///             logarithmic.
 ///
-/// \return     Negative, zero, or positive as left sorts before, with, or after right.
+/// \param      edges       Edges to sort.
+/// \param      left        First index of the range.
+/// \param      right       Last index of the range.
+/// \param      order       Key order.
 ///
-static int compare_source_weight_target(const void *left, const void *right) {
-    const edge *a = left;
-    const edge *b = right;
+static void edge_quicksort(edge *edges, int left, int right, edge_order order) {
+    while (left < right) {
+        const edge pivot = edges[left + (right - left) / 2];
+        int i = left;
+        int j = right;
 
-    int order = compare_ints(a->source, b->source);
-    if (order == 0) {
-        order = compare_weights_descending(a->weight, b->weight);
-    }
-    if (order == 0) {
-        order = compare_ints(a->target, b->target);
-    }
-    return order;
-}
+        while (i <= j) {
+            while (edge_before(&edges[i], &pivot, order)) {
+                ++i;
+            }
+            while (edge_before(&pivot, &edges[j], order)) {
+                --j;
+            }
+            if (i <= j) {
+                const edge swapped = edges[i];
+                edges[i] = edges[j];
+                edges[j] = swapped;
+                ++i;
+                --j;
+            }
+        }
 
-///
-/// \brief      Order edges heaviest first, then by source, then target.
-///
-/// \param      left        First edge, as qsort() passes it.
-/// \param      right       Second edge.
-///
-/// \return     Negative, zero, or positive as left sorts before, with, or after right.
-///
-static int compare_weight_source_target(const void *left, const void *right) {
-    const edge *a = left;
-    const edge *b = right;
-
-    int order = compare_weights_descending(a->weight, b->weight);
-    if (order == 0) {
-        order = compare_ints(a->source, b->source);
+        if (j - left < right - i) {
+            edge_quicksort(edges, left, j, order);
+            left = i;
+        } else {
+            edge_quicksort(edges, i, right, order);
+            right = j;
+        }
     }
-    if (order == 0) {
-        order = compare_ints(a->target, b->target);
-    }
-    return order;
 }
 
 void edge_list_sort(edge_list *const self, edge_order order) {
-    int (*compare)(const void *, const void *);
-
-    switch (order) {
-    case EDGE_ORDER_SOURCE_WEIGHT_TARGET:
-        compare = compare_source_weight_target;
-        break;
-    case EDGE_ORDER_WEIGHT_SOURCE_TARGET:
-        compare = compare_weight_source_target;
-        break;
-    case EDGE_ORDER_SOURCE_TARGET_WEIGHT:
-    default:
-        compare = compare_source_target_weight;
-        break;
-    }
-
-    qsort(self->edges, (size_t)self->length, sizeof(edge), compare);
+    edge_quicksort(self->edges, 0, self->length - 1, order);
 }

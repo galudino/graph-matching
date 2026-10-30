@@ -140,7 +140,7 @@ int main(int argc, const char *argv[]) {
     stopwatch_start(&timer);
 
     graph input;
-    status_code status = graph_read_matrix_market(&input, args.input_path);
+    status_code status = graph_init_from_matrix_market(&input, args.input_path);
     if (status != STATUS_OK) {
         fprintf(stderr, "Could not read %s: %s.\n", args.input_path, status_code_string(status));
         return EXIT_FAILURE;
@@ -191,8 +191,8 @@ int main(int argc, const char *argv[]) {
         }
     }
 
-    matching_destroy(&result);
-    graph_destroy(&input);
+    matching_deinit(&result);
+    graph_deinit(&input);
 
     return status == STATUS_OK ? EXIT_SUCCESS : EXIT_FAILURE;
 }

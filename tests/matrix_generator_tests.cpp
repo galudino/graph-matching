@@ -73,7 +73,7 @@ TEST_CASE("generate_edges rejects out-of-range options") {
                     std::invalid_argument);
 }
 
-TEST_CASE("generated matrices read back with graph_read_matrix_market") {
+TEST_CASE("generated matrices read back with graph_init_from_matrix_market") {
     const graph_matching::generator_options options{.vertices = 300, .average_degree = 6};
     const auto edges = graph_matching::generate_edges(options);
 
@@ -84,7 +84,7 @@ TEST_CASE("generated matrices read back with graph_read_matrix_market") {
     }
 
     graph input{};
-    REQUIRE(graph_read_matrix_market(&input, path.c_str()) == STATUS_OK);
+    REQUIRE(graph_init_from_matrix_market(&input, path.c_str()) == STATUS_OK);
 
     CHECK(input.vertex_count == 300);
 
@@ -99,6 +99,6 @@ TEST_CASE("generated matrices read back with graph_read_matrix_market") {
     }
     CHECK(total_degree == 2 * input.edge_count);
 
-    graph_destroy(&input);
+    graph_deinit(&input);
     std::filesystem::remove(path);
 }

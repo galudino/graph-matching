@@ -53,7 +53,7 @@ static status_code normalized_copy(const edge_list *edges, int vertex_count, edg
         const edge e = edges->edges[i];
 
         if (e.source < 0 || e.source >= vertex_count || e.target < 0 || e.target >= vertex_count) {
-            edge_list_destroy(result);
+            edge_list_deinit(result);
             return STATUS_INVALID_ARGUMENT;
         }
 
@@ -70,17 +70,26 @@ static status_code normalized_copy(const edge_list *edges, int vertex_count, edg
     return STATUS_OK;
 }
 
-status_code graph_init_from_edges(graph *const self, int vertex_count, const edge_list *edges) {
-    graph_reset(self);
+///
+/// \brief      Build a graph from normalized edges, taking ownership of them.
+///
+/// \details    Every edge must have source < target, both in range. The
+///             edges are sorted in place and released, whether or not the
+///             build succeeds.
+///
+/// \param      self            Graph to initialize; already reset.
+/// \param      vertex_count    Number of vertices.
+/// \param      undirected      Normalized edges; released on return.
+///
+/// \return     STATUS_OK, STATUS_INVALID_ARGUMENT, or STATUS_OUT_OF_MEMORY.
+///
+static status_code graph_build(graph *const self, int vertex_count, edge_list *undirected_edges) {
+    edge_list undirected = *undirected_edges;
+    *undirected_edges = (edge_list){.edges = NULL, .length = 0};
 
-    if (vertex_count < 0 || edges->length > INT_MAX / 2) {
+    if (undirected.length > INT_MAX / 2) {
+        edge_list_deinit(&undirected);
         return STATUS_INVALID_ARGUMENT;
-    }
-
-    edge_list undirected;
-    status_code status = normalized_copy(edges, vertex_count, &undirected);
-    if (status != STATUS_OK) {
-        return status;
     }
 
     // Sorting puts copies of the same pair together, heaviest first.
@@ -88,9 +97,9 @@ status_code graph_init_from_edges(graph *const self, int vertex_count, const edg
 
     // Store each distinct edge in both directions.
     edge_list directed;
-    status = edge_list_init(&directed, undirected.length * 2);
+    const status_code status = edge_list_init(&directed, undirected.length * 2);
     if (status != STATUS_OK) {
-        edge_list_destroy(&undirected);
+        edge_list_deinit(&undirected);
         return status;
     }
 
@@ -109,7 +118,7 @@ status_code graph_init_from_edges(graph *const self, int vertex_count, const edg
         ++edge_count;
     }
     directed.length = 2 * edge_count;
-    edge_list_destroy(&undirected);
+    edge_list_deinit(&undirected);
 
     // Group by vertex, strongest neighbor first.
     edge_list_sort(&directed, EDGE_ORDER_SOURCE_WEIGHT_TARGET);
@@ -123,8 +132,8 @@ status_code graph_init_from_edges(graph *const self, int vertex_count, const edg
     if (degrees == NULL || self->neighbor_offsets == NULL || self->neighbors == NULL ||
         self->weights == NULL) {
         free(degrees);
-        edge_list_destroy(&directed);
-        graph_destroy(self);
+        edge_list_deinit(&directed);
+        graph_deinit(self);
         return STATUS_OUT_OF_MEMORY;
     }
 
@@ -140,8 +149,24 @@ status_code graph_init_from_edges(graph *const self, int vertex_count, const edg
     self->edge_count = edge_count;
 
     free(degrees);
-    edge_list_destroy(&directed);
+    edge_list_deinit(&directed);
     return STATUS_OK;
+}
+
+status_code graph_init_from_edges(graph *const self, int vertex_count, const edge_list *edges) {
+    graph_reset(self);
+
+    if (vertex_count < 0 || edges->length > INT_MAX / 2) {
+        return STATUS_INVALID_ARGUMENT;
+    }
+
+    edge_list undirected;
+    const status_code status = normalized_copy(edges, vertex_count, &undirected);
+    if (status != STATUS_OK) {
+        return status;
+    }
+
+    return graph_build(self, vertex_count, &undirected);
 }
 
 ///
@@ -169,9 +194,13 @@ static status_code read_entry_weight(FILE *file, double *weight) {
 ///
 /// \brief      Read the entries of an open Matrix Market file.
 ///
+/// \details    Stores each entry as an edge with the smaller vertex as its
+///             source (0-based), skipping self-loops: the form graph_build()
+///             takes, so no copy is needed.
+///
 /// \param      file            File positioned at the start.
 /// \param      vertex_count    Receives the number of vertices.
-/// \param      edges           Receives one edge per entry (0-based).
+/// \param      edges           Receives the edges.
 ///
 /// \return     STATUS_OK, STATUS_PARSE_ERROR, or STATUS_OUT_OF_MEMORY.
 ///
@@ -196,6 +225,7 @@ static status_code read_entries(FILE *file, int *vertex_count, edge_list *edges)
         return status;
     }
 
+    int length = 0;
     for (int i = 0; i < entries; ++i) {
         int row = 0;
         int column = 0;
@@ -203,17 +233,25 @@ static status_code read_entries(FILE *file, int *vertex_count, edge_list *edges)
 
         if (fscanf(file, "%d %d", &row, &column) != 2 || row < 1 || row > *vertex_count ||
             column < 1 || column > *vertex_count || read_entry_weight(file, &weight) != STATUS_OK) {
-            edge_list_destroy(edges);
+            edge_list_deinit(edges);
             return STATUS_PARSE_ERROR;
         }
 
-        edges->edges[i] = (edge){.source = row - 1, .target = column - 1, .weight = weight};
+        if (row == column) {
+            continue;
+        }
+
+        const int smaller = row < column ? row : column;
+        const int larger = row < column ? column : row;
+        edges->edges[length++] =
+            (edge){.source = smaller - 1, .target = larger - 1, .weight = weight};
     }
 
+    edges->length = length;
     return STATUS_OK;
 }
 
-status_code graph_read_matrix_market(graph *const self, const char *path) {
+status_code graph_init_from_matrix_market(graph *const self, const char *path) {
     graph_reset(self);
 
     FILE *file = fopen(path, "r");
@@ -230,12 +268,10 @@ status_code graph_read_matrix_market(graph *const self, const char *path) {
         return status;
     }
 
-    status = graph_init_from_edges(self, vertex_count, &edges);
-    edge_list_destroy(&edges);
-    return status;
+    return graph_build(self, vertex_count, &edges);
 }
 
-void graph_destroy(graph *const self) {
+void graph_deinit(graph *const self) {
     free(self->neighbor_offsets);
     free(self->neighbors);
     free(self->weights);

@@ -23,7 +23,7 @@ namespace graph_matching {
 
 namespace {
 
-/// graph_read_matrix_market() stores each edge twice in int-indexed arrays.
+/// graph_init_from_matrix_market() stores each edge twice in int-indexed arrays.
 constexpr std::int64_t max_entries = INT_MAX / 2;
 
 } // namespace

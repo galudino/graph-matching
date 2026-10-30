@@ -45,7 +45,7 @@ typedef struct graph {
 /// \details    Each edge connects its source and target in both directions.
 ///             Self-loops are dropped, and when the same pair appears more
 ///             than once, the heaviest copy is kept. On failure, self is
-///             left empty and safe to destroy.
+///             left empty and safe to pass to graph_deinit().
 ///
 /// \param      self            Graph to initialize.
 /// \param      vertex_count    Number of vertices; at least 0.
@@ -63,7 +63,7 @@ status_code graph_init_from_edges(graph *self, int vertex_count, const edge_list
 ///             with the entry's value as its weight, or 1 for a pattern
 ///             matrix. See graph_init_from_edges() for how self-loops and
 ///             duplicates are handled. On failure, self is left empty and
-///             safe to destroy.
+///             safe to pass to graph_deinit().
 ///
 /// \param      self        Graph to initialize.
 /// \param      path        Path to the .mtx file.
@@ -71,14 +71,14 @@ status_code graph_init_from_edges(graph *self, int vertex_count, const edge_list
 /// \return     STATUS_OK, STATUS_FILE_ERROR, STATUS_PARSE_ERROR, or
 ///             STATUS_OUT_OF_MEMORY.
 ///
-status_code graph_read_matrix_market(graph *self, const char *path);
+status_code graph_init_from_matrix_market(graph *self, const char *path);
 
 ///
 /// \brief      Release a graph's memory.
 ///
 /// \param      self        Graph to release; left empty.
 ///
-void graph_destroy(graph *self);
+void graph_deinit(graph *self);
 
 ///
 /// \brief      Write every vertex's weighted neighbor list.

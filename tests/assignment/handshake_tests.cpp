@@ -106,11 +106,12 @@ private:
 ///
 /// \brief      Read data/test.mtx.
 ///
-/// \return     The graph; release it with graph_destroy().
+/// \return     The graph; release it with graph_deinit().
 ///
 graph read_test_matrix() {
     graph input{};
-    REQUIRE(graph_read_matrix_market(&input, GRAPH_MATCHING_DATA_DIR "/test.mtx") == STATUS_OK);
+    REQUIRE(graph_init_from_matrix_market(&input, GRAPH_MATCHING_DATA_DIR "/test.mtx") ==
+            STATUS_OK);
     return input;
 }
 
@@ -134,7 +135,7 @@ std::vector<int> run_handshake(const graph &input, int thread_count, int hand_co
 
     const std::span partners(result.partners, static_cast<std::size_t>(result.vertex_count));
     std::vector<int> copy(partners.begin(), partners.end());
-    matching_destroy(&result);
+    matching_deinit(&result);
     return copy;
 }
 
@@ -159,7 +160,7 @@ TEST_CASE("worklist_range splits the worklist into contiguous, balanced ranges")
         CHECK(expected_begin == 9);
     }
 
-    graph_destroy(&input);
+    graph_deinit(&input);
 }
 
 TEST_CASE("one_way_extend_hand picks each vertex's strongest unmatched neighbor") {
@@ -192,7 +193,7 @@ TEST_CASE("one_way_extend_hand picks each vertex's strongest unmatched neighbor"
     harness.run(one_way_extend_hand);
     CHECK(harness.m_strongest[6] == VERTEX_UNMATCHABLE);
 
-    graph_destroy(&input);
+    graph_deinit(&input);
 }
 
 TEST_CASE("one_way_check_handshakes matches mutual hands only") {
@@ -206,7 +207,7 @@ TEST_CASE("one_way_check_handshakes matches mutual hands only") {
 
     CHECK(harness.m_partners == std::vector<int>{u, 4, 5, u, 1, 2, VERTEX_UNMATCHABLE, u, u});
 
-    graph_destroy(&input);
+    graph_deinit(&input);
 }
 
 TEST_CASE("worklist_count_unmatched and worklist_compact keep the unmatched vertices in order") {
@@ -226,7 +227,7 @@ TEST_CASE("worklist_count_unmatched and worklist_compact keep the unmatched vert
     CHECK(next == std::vector{0, 3, 6, 7, 8});
     CHECK(harness.m_write_offsets[3] == 5);
 
-    graph_destroy(&input);
+    graph_deinit(&input);
 }
 
 TEST_CASE("n_way_find_candidates lists each vertex's N strongest unmatched neighbors") {
@@ -239,7 +240,7 @@ TEST_CASE("n_way_find_candidates lists each vertex's N strongest unmatched neigh
     CHECK(harness.m_candidates ==
           std::vector{3, 1, 4, 2, 5, 1, 4, 0, 1, 5, 2, 4, 3, 7, 4, 8, 7, 5});
 
-    graph_destroy(&input);
+    graph_deinit(&input);
 }
 
 TEST_CASE("n_way_extend_hand picks each vertex's strongest mutual candidate") {
@@ -252,7 +253,7 @@ TEST_CASE("n_way_extend_hand picks each vertex's strongest mutual candidate") {
     // No candidate of vertex 6 chose it, so it waits for the next pass.
     CHECK(harness.m_strongest == std::vector<int>{3, 4, 5, 0, 1, 2, VERTEX_UNMATCHED, 8, 7});
 
-    graph_destroy(&input);
+    graph_deinit(&input);
 }
 
 TEST_CASE("handshake_match matches test.mtx the same way on any number of threads") {
@@ -265,7 +266,7 @@ TEST_CASE("handshake_match matches test.mtx the same way on any number of thread
         CHECK(run_handshake(input, thread_count, 2) == expected);
     }
 
-    graph_destroy(&input);
+    graph_deinit(&input);
 }
 
 TEST_CASE("handshake_match gives thread-count-independent results on a random graph") {
@@ -279,7 +280,7 @@ TEST_CASE("handshake_match gives thread-count-independent results on a random gr
     }
 
     graph input{};
-    REQUIRE(graph_read_matrix_market(&input, file.c_str()) == STATUS_OK);
+    REQUIRE(graph_init_from_matrix_market(&input, file.c_str()) == STATUS_OK);
 
     for (const int hand_count : {1, 2, 3}) {
         CAPTURE(hand_count);
@@ -290,7 +291,7 @@ TEST_CASE("handshake_match gives thread-count-independent results on a random gr
         }
     }
 
-    graph_destroy(&input);
+    graph_deinit(&input);
 }
 
 TEST_CASE("one-way handshaking gives exactly the greedy matching") {
@@ -307,7 +308,7 @@ TEST_CASE("one-way handshaking gives exactly the greedy matching") {
         }
 
         graph input{};
-        REQUIRE(graph_read_matrix_market(&input, file.c_str()) == STATUS_OK);
+        REQUIRE(graph_init_from_matrix_market(&input, file.c_str()) == STATUS_OK);
 
         matching greedy{};
         REQUIRE(matching_init(&greedy, input.vertex_count) == STATUS_OK);
@@ -316,7 +317,7 @@ TEST_CASE("one-way handshaking gives exactly the greedy matching") {
 
         CHECK(run_handshake(input, 4, 1) == std::vector<int>(expected.begin(), expected.end()));
 
-        matching_destroy(&greedy);
-        graph_destroy(&input);
+        matching_deinit(&greedy);
+        graph_deinit(&input);
     }
 }

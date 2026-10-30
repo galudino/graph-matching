@@ -27,7 +27,8 @@ struct test_matrix_fixture {
     matching result{}; ///< A matching of input, all VERTEX_UNMATCHED to start.
 
     test_matrix_fixture() {
-        REQUIRE(graph_read_matrix_market(&input, GRAPH_MATCHING_DATA_DIR "/test.mtx") == STATUS_OK);
+        REQUIRE(graph_init_from_matrix_market(&input, GRAPH_MATCHING_DATA_DIR "/test.mtx") ==
+                STATUS_OK);
         REQUIRE(matching_init(&result, input.vertex_count) == STATUS_OK);
     }
 
@@ -37,8 +38,8 @@ struct test_matrix_fixture {
     test_matrix_fixture &operator=(test_matrix_fixture &&) = delete;
 
     ~test_matrix_fixture() {
-        matching_destroy(&result);
-        graph_destroy(&input);
+        matching_deinit(&result);
+        graph_deinit(&input);
     }
 
     ///
@@ -104,31 +105,33 @@ TEST_CASE_FIXTURE(test_matrix_fixture,
     CHECK_FALSE(matching_is_maximal(&result, &input));
 }
 
-TEST_CASE_FIXTURE(test_matrix_fixture, "matching_write and matching_read round-trip a matching") {
+TEST_CASE_FIXTURE(test_matrix_fixture,
+                  "matching_write and matching_init_from_file round-trip a matching") {
     REQUIRE(matching_run_greedy(&result, &input) == STATUS_OK);
     const graph_matching::testing::temporary_file file("graph_matching_result.out");
 
     REQUIRE(matching_write(&result, file.c_str()) == STATUS_OK);
 
     matching read_back;
-    REQUIRE(matching_read(&read_back, file.c_str(), 9) == STATUS_OK);
+    REQUIRE(matching_init_from_file(&read_back, file.c_str(), 9) == STATUS_OK);
     const std::span values(read_back.partners, 9);
     CHECK(std::vector(values.begin(), values.end()) == partners());
-    matching_destroy(&read_back);
+    matching_deinit(&read_back);
 
-    CHECK(matching_read(&read_back, file.c_str(), 10) == STATUS_PARSE_ERROR);
+    CHECK(matching_init_from_file(&read_back, file.c_str(), 10) == STATUS_PARSE_ERROR);
     CHECK(read_back.partners == nullptr);
 }
 
 TEST_CASE("matching_run_greedy rejects a matching of the wrong size") {
     graph input;
-    REQUIRE(graph_read_matrix_market(&input, GRAPH_MATCHING_DATA_DIR "/test.mtx") == STATUS_OK);
+    REQUIRE(graph_init_from_matrix_market(&input, GRAPH_MATCHING_DATA_DIR "/test.mtx") ==
+            STATUS_OK);
     matching result;
     REQUIRE(matching_init(&result, 3) == STATUS_OK);
 
     CHECK(matching_run_greedy(&result, &input) == STATUS_INVALID_ARGUMENT);
     CHECK(matching_validate(&result, &input) == STATUS_INVALID_MATCHING);
 
-    matching_destroy(&result);
-    graph_destroy(&input);
+    matching_deinit(&result);
+    graph_deinit(&input);
 }

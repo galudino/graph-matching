@@ -45,7 +45,7 @@ std::vector<edge> sorted(edge_order order) {
     edge_list_sort(&list, order);
 
     std::vector<edge> result(edges.begin(), edges.end());
-    edge_list_destroy(&list);
+    edge_list_deinit(&list);
     return result;
 }
 
@@ -90,7 +90,7 @@ TEST_CASE("edge_list_init accepts zero edges and rejects negative lengths") {
     REQUIRE(edge_list_init(&list, 0) == STATUS_OK);
     CHECK(list.length == 0);
     edge_list_sort(&list, EDGE_ORDER_SOURCE_TARGET_WEIGHT);
-    edge_list_destroy(&list);
+    edge_list_deinit(&list);
     CHECK(list.edges == nullptr);
 
     CHECK(edge_list_init(&list, -1) == STATUS_INVALID_ARGUMENT);

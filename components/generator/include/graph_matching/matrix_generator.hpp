@@ -3,7 +3,7 @@
 /// \brief      Random test matrices in Matrix Market format.
 ///
 /// \details    Generates random undirected weighted graphs and writes them as
-///             symmetric Matrix Market files that graph_read_matrix_market()
+///             symmetric Matrix Market files that graph_init_from_matrix_market()
 ///             accepts.
 ///
 /// \author     Gemuele (Gem) Aludino
