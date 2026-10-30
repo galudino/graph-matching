@@ -19,8 +19,8 @@
 extern "C" {
 #endif
 
-/// Report an internal bug through err(), tagged with the calling function and line.
-#define logb(...) err("bug", __func__, __LINE__, __VA_ARGS__)
+/// Print a debug message through err(), tagged with the calling function and line.
+#define logd(...) err("debug", __func__, __LINE__, __VA_ARGS__)
 
 /// Report an error through err(), tagged with the calling function and line.
 #define loge(...) err("error", __func__, __LINE__, __VA_ARGS__)
@@ -46,7 +46,7 @@ extern "C" {
 /// \brief      Print a tagged diagnostic message to stderr.
 ///
 /// \details    Messages longer than 1023 characters are truncated. Use the
-///             logb (bug), loge (error), logw (warning), and logi (info) macros
+///             logd (debug), loge (error), logw (warning), and logi (info) macros
 ///             instead of calling this directly.
 ///
 /// \param      level       Severity tag, such as "error".

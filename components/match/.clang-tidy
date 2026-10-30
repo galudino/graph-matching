@@ -20,4 +20,4 @@ Checks: >
 CheckOptions:
   # The logging macros are lowercase by choice.
   - key: readability-identifier-naming.MacroDefinitionIgnoredRegexp
-    value: '^log[bewi]$'
+    value: '^log[dewi]$'
