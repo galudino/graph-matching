@@ -17,6 +17,11 @@ examples, and how to check your work.
 These start as empty functions. Until they are implemented, a handshaking
 run stops after one pass and reports that the vertices are still unmatched.
 
+**The API reference** (Doxygen, published from `main`) is at
+**https://galudino.github.io/graph-matching/**. To build it locally, run
+`cmake --build --preset debug --target docs` and open
+`build/debug/docs/html/index.html`.
+
 ## Build, test, and run
 
 ```bash
@@ -180,6 +185,7 @@ tests/                         doctest unit tests
 tests/assignment/              Assignment tests (assignment preset)
 data/test.mtx                  Small example matrix
 docs/assignment.md             Assignment guide; figures/ and the PDF build alongside
+docs/mainpage.md               Front page of the API reference
 reference/match-sol            Reference binary
 scripts/                       Matrix download, reference comparison, PDF build
 ```

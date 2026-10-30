@@ -77,9 +77,9 @@ static status_code normalized_copy(const edge_list *edges, int vertex_count, edg
 ///             edges are sorted in place and released, whether or not the
 ///             build succeeds.
 ///
-/// \param      self            Graph to initialize; already reset.
-/// \param      vertex_count    Number of vertices.
-/// \param      undirected      Normalized edges; released on return.
+/// \param      self                Graph to initialize; already reset.
+/// \param      vertex_count        Number of vertices.
+/// \param      undirected_edges    Normalized edges; released on return.
 ///
 /// \return     STATUS_OK, STATUS_INVALID_ARGUMENT, or STATUS_OUT_OF_MEMORY.
 ///
