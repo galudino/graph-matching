@@ -1,28 +1,22 @@
 # graph-matching
 
 Parallel graph matching with one-way and N-way handshaking, using POSIX
-threads. The algorithms are written in C first, in an object-oriented style
-that maps onto C++ classes, ahead of a C++ version.
+threads. Each implementation is its own project, with its own components,
+programs, tests, and API reference; they share only the test data and tools
+at the repository root.
 
-**The assignment** is described in [docs/assignment.md](docs/assignment.md)
-(also as a [PDF](docs/assignment.pdf)): what each function must do, worked
-examples, and how to check your work.
+| Implementation | Folder | Program | API reference |
+|----------------|--------|---------|---------------|
+| C | [`c/`](c/README.md) | `graph_matching_c` | [galudino.github.io/graph-matching/c](https://galudino.github.io/graph-matching/c/) |
 
-| File | Functions |
-|------|-----------|
-| `components/handshake/src/worklist.c` | `worklist_range`, `worklist_count_unmatched`, `worklist_compact` |
-| `components/handshake/src/one_way.c` | `one_way_extend_hand`, `one_way_check_handshakes` |
-| `components/handshake/src/n_way.c` | `n_way_find_candidates`, `n_way_extend_hand` (extra credit) |
+**The assignment** is part of the C implementation: see
+[c/README.md](c/README.md) and the guide in
+[c/docs/assignment.md](c/docs/assignment.md) (also as a
+[PDF](c/docs/assignment.pdf)).
 
-These start as empty functions. Until they are implemented, a handshaking
-run stops after one pass and reports that the vertices are still unmatched.
+## Build and test
 
-**The API reference** (Doxygen, published from `main`) is at
-**https://galudino.github.io/graph-matching/**. To build it locally, run
-`cmake --build --preset debug --target docs` and open
-`build/debug/docs/html/index.html`.
-
-## Build, test, and run
+The presets build and test every implementation at once:
 
 ```bash
 cmake --preset debug
@@ -30,106 +24,19 @@ cmake --build --preset debug
 ctest --preset debug
 ```
 
-The unit tests cover everything except the assignment. The assignment's own
-tests are in a separate preset, since they fail until it is done:
+Programs land in `build/<preset>/bin/`. Other presets are `release`,
+`asan-ubsan` (address and undefined-behavior sanitizers), and `assignment`
+(adds the C assignment's tests). Test names start with their
+implementation's folder, such as `c/`, so `ctest --preset debug -R '^c/'`
+runs only the C tests.
 
-```bash
-cmake --preset assignment && cmake --build --preset assignment && ctest --preset assignment
-```
-
-Run the matcher with one of three methods:
-
-```bash
-# One-way on 4 threads; N-way with 2 hands on 4 threads; the greedy baseline.
-./build/debug/app/graph_matching data/test.mtx out.txt one-way 4
-./build/debug/app/graph_matching data/test.mtx out.txt n-way 2 4
-./build/debug/app/graph_matching data/test.mtx out.txt greedy
-```
-
-The output has one line per vertex: its partner, or `-2`
-(`VERTEX_UNMATCHABLE`) if it has none. The program then checks the result
-and reports its size, weight, and whether it is maximal; it exits with an
-error if the result is invalid.
-
-### From VS Code
-
-Run these from the Command Palette with **Tasks: Run Task**. The run tasks
-build first, then ask for the matrix, number of threads, and (for N-way)
-hands per vertex:
-
-| Task | Does |
-|------|------|
-| **Run: One-Way Matching** | Writes the result to `<build dir>/one_way.out` |
-| **Run: N-Way Matching** | Writes the result to `<build dir>/n_ways.out` |
-| **Run: Greedy Matching** | Writes the result to `<build dir>/greedy.out` |
-| **Run: Compare One-Way with Reference** | Runs `compare_with_reference.sh` on your build |
-| **Run: Compare N-Way with Reference** | The same, for N-way |
-| **Test: Assignment** | Builds and runs the assignment tests |
-| **Data: Generate Test Matrices** | Writes the small, medium, and large generated matrices |
-| **Data: Fetch Test Matrices** | Runs `fetch_matrices.sh` for the SuiteSparse matrices |
-
-To debug, use the **CMake: Debug graph_matching (one-way)** or **(N-way)**
-launch configuration, which run on `data/test.mtx` with 2 threads, or
-**CMake: Debug graph_matching_assignment_tests**.
-
-### From CMake
-
-The `run_one_way`, `run_n_ways`, and `run_greedy` targets build the program
-and run it, writing `one_way.out`, `n_ways.out`, or `greedy.out` in the build
-directory:
-
-```bash
-cmake --build --preset debug --target run_one_way
-```
-
-To change the input, set these when configuring:
-
-```bash
-cmake --preset debug \
-    -DGRAPH_MATCHING_RUN_MATRIX=data/generated/medium.mtx \
-    -DGRAPH_MATCHING_RUN_THREADS=8 \
-    -DGRAPH_MATCHING_RUN_HANDS=3
-```
-
-CMake turns a relative `GRAPH_MATCHING_RUN_MATRIX` into an absolute path from
-the directory you run `cmake` in, which is the repository root when you use
-presets.
+Each implementation also builds on its own, such as `cmake -S c -B build/c-only`.
 
 ## Test matrices
 
 `data/test.mtx` is a 9-vertex example. For anything larger, generate random
-matrices or download the SuiteSparse ones.
-
-### Generated matrices
-
-`generate_matrix` writes a random graph as a symmetric Matrix Market file:
-
-```bash
-# 50,000 vertices with average degree 12; then the same with weights 1-100 and seed 7.
-./build/debug/app/generate_matrix data/generated/mine.mtx 50000 12
-./build/debug/app/generate_matrix data/generated/mine.mtx 50000 12 100 7
-```
-
-Weights are whole numbers from 1 to the maximum (default 10), so many edges
-tie and the tie-breaking by vertex ID gets exercised; raise the maximum for
-fewer ties. The same arguments always produce the same file.
-
-The `generate_matrices` target (or the **Data: Generate Test Matrices** task)
-writes a standard set to `data/generated/`, which git ignores:
-
-| File | Vertices | Average degree | Size |
-|------|----------|----------------|------|
-| `small.mtx` | 1,000 | 8 | 39 KB |
-| `medium.mtx` | 100,000 | 16 | 11 MB |
-| `large.mtx` | 1,000,000 | 16 | 122 MB |
-
-```bash
-cmake --build --preset debug --target generate_matrices
-```
-
-### SuiteSparse matrices
-
-Six larger matrices come from the SuiteSparse Matrix Collection:
+matrices (see [c/README.md](c/README.md#generating-test-matrices)) or
+download the SuiteSparse ones:
 
 ```bash
 ./scripts/fetch_matrices.sh              # all six, smallest first
@@ -149,72 +56,45 @@ in the Explorer, and extract it there:
 cd data && tar -xzf cant.tar.gz && rm cant.tar.gz
 ```
 
-## Checking results
+## Reference binary
 
-- **Greedy:** one-way handshaking produces exactly the greedy matching, so
-  `cmp` its output with `greedy`'s on any graph.
-- **Reference binary:** `reference/match-sol` is a reference implementation
-  (x86-64 Linux). `compare_with_reference.sh` runs it and your build on the
-  same input and diffs the results:
+`reference/match-sol` is a reference implementation (x86-64 Linux).
+`compare_with_reference.sh` runs it and a build on the same input and diffs
+the results. It compares the C build by default; set `GRAPH_MATCHING_BIN` to
+compare another program:
 
-  ```bash
-  ./scripts/compare_with_reference.sh data/test.mtx one-way 4
-  ./scripts/compare_with_reference.sh data/generated/small.mtx n-way 2 4
-  ```
+```bash
+./scripts/compare_with_reference.sh data/test.mtx one-way 4
+./scripts/compare_with_reference.sh data/generated/small.mtx n-way 2 4
+```
 
 ## Layout
 
-Each module is a set of typedef'd structs with functions that take the
-instance first (`graph *self`, or `const graph *self` when they don't change
-it), so that each maps onto a C++ class.
-
 ```text
-app/main.c                     Command-line matcher
-app/generate_matrix.cpp        Random test matrix generator (C++)
-components/
-    support/                   status_code, log (logd/loge/logw/logi), stopwatch, prefix_sum
-    graph/                     edge_list, and graph (adjacency arrays, Matrix Market reader)
-    matching/                  matching: results, file I/O, validation, greedy baseline
-    handshake/                 handshake: the parallel driver, plus the assignment
-        src/worklist.c           Assignment
-        src/one_way.c            Assignment
-        src/n_way.c              Assignment (extra credit)
-    generator/                 Random graph generation (C++)
-third_party/mmio/              NIST Matrix Market I/O library, unchanged
-tests/                         doctest unit tests
-tests/assignment/              Assignment tests (assignment preset)
-data/test.mtx                  Small example matrix
-docs/assignment.md             Assignment guide; figures/ and the PDF build alongside
-docs/mainpage.md               Front page of the API reference
+c/                             C implementation (see c/README.md)
+data/test.mtx                  Small example matrix; downloads and generated matrices go here
 reference/match-sol            Reference binary
-scripts/                       Matrix download, reference comparison, PDF build
-```
-
-## Rebuilding the guide
-
-The figures in `docs/figures/` are drawn by `docs/figures/generate.py`, and
-`scripts/build_assignment_pdf.sh` renders `docs/assignment.md` to
-`docs/assignment.pdf`. The PDF build needs pandoc, Node.js, and Playwright's
-Chromium, which the devcontainer does not include.
-
-```bash
-python3 docs/figures/generate.py
-./scripts/build_assignment_pdf.sh
+scripts/                       Matrix download, reference comparison
+docs/index.html                Front page of the API reference site
+CMakeLists.txt                 Builds every implementation
+CMakePresets.json              debug, release, asan-ubsan, assignment
 ```
 
 ## Releases
 
-Pushing a version tag publishes a GitHub release with `docs/assignment.pdf`
-attached. The tag must match `VERSION` in `CMakeLists.txt`, and an annotated
-tag's message becomes the release notes:
+Each implementation is released on its own. Pushing a tag named
+`<folder>/v<version>` publishes a GitHub release; the version must match
+`VERSION` in that folder's `CMakeLists.txt`, and an annotated tag's message
+becomes the release notes. The C release attaches the assignment PDF:
 
 ```bash
-git tag -a v1.0.0 -m "Release notes"
-git push origin v1.0.0
+git tag -a c/v1.1.0 -m "Release notes"
+git push origin c/v1.1.0
 ```
 
 A release drafted in the GitHub UI works too; the workflow only attaches the
-PDF to it.
+PDF to it. Releases before the split into folders use plain tags, such as
+`v1.0.0`.
 
 ## Credits and license
 

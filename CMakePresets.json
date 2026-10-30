@@ -44,7 +44,7 @@
             "displayName": "Debug + assignment tests",
             "inherits": "debug",
             "cacheVariables": {
-                "GRAPH_MATCHING_TEST_ASSIGNMENT": "ON"
+                "GRAPH_MATCHING_C_TEST_ASSIGNMENT": "ON"
             }
         }
     ],

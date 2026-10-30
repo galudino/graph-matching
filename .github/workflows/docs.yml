@@ -1,6 +1,7 @@
 name: Docs
 
-# Generate the Doxygen API reference and publish it to GitHub Pages.
+# Generate each implementation's Doxygen API reference and publish them to
+# GitHub Pages: docs/index.html at the root, linking to the C reference in c/.
 # Nothing is committed to a branch: the built HTML is uploaded as a Pages
 # artifact and deployed, so the source tree stays free of generated output.
 #
@@ -47,19 +48,25 @@ jobs:
           sudo apt-get install -y ninja-build g++-14 doxygen graphviz
 
       - name: Configure
-        run: cmake -S . -B build/docs -G Ninja -DGRAPH_MATCHING_BUILD_TESTS=OFF
+        run: cmake -S . -B build/docs -G Ninja -DGRAPH_MATCHING_C_BUILD_TESTS=OFF
 
       - name: Generate API reference
-        run: cmake --build build/docs --target docs
+        run: cmake --build build/docs --target docs_c
+
+      - name: Assemble the site
+        run: |
+          mkdir -p build/site
+          cp docs/index.html build/site/
+          cp -r build/docs/c/docs/html build/site/c
 
       - name: Verify HTML was produced
-        run: test -f build/docs/docs/html/index.html
+        run: test -f build/site/index.html && test -f build/site/c/index.html
 
       - name: Upload Pages artifact
         if: github.event_name != 'pull_request'
         uses: actions/upload-pages-artifact@v3
         with:
-          path: build/docs/docs/html
+          path: build/site
 
   deploy:
     if: github.event_name != 'pull_request'
