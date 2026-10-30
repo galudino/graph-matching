@@ -292,3 +292,31 @@ TEST_CASE("handshake_match gives thread-count-independent results on a random gr
 
     graph_destroy(&input);
 }
+
+TEST_CASE("one-way handshaking gives exactly the greedy matching") {
+    for (const int max_weight : {3, 1000}) {
+        CAPTURE(max_weight);
+        const graph_matching::generator_options options{
+            .vertices = 1500, .average_degree = 8, .max_weight = max_weight, .seed = 7};
+        const auto edges = graph_matching::generate_edges(options);
+
+        const graph_matching::testing::temporary_file file("graph_matching_greedy.mtx");
+        {
+            std::ofstream out(file.c_str());
+            graph_matching::write_matrix_market(out, options, edges);
+        }
+
+        graph input{};
+        REQUIRE(graph_read_matrix_market(&input, file.c_str()) == STATUS_OK);
+
+        matching greedy{};
+        REQUIRE(matching_init(&greedy, input.vertex_count) == STATUS_OK);
+        REQUIRE(matching_run_greedy(&greedy, &input) == STATUS_OK);
+        const std::span expected(greedy.partners, static_cast<std::size_t>(greedy.vertex_count));
+
+        CHECK(run_handshake(input, 4, 1) == std::vector<int>(expected.begin(), expected.end()));
+
+        matching_destroy(&greedy);
+        graph_destroy(&input);
+    }
+}
