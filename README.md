@@ -8,6 +8,7 @@ at the repository root.
 | Implementation | Folder | Program | API reference |
 |----------------|--------|---------|---------------|
 | C | [`c/`](c/README.md) | `graph_matching_c` | [galudino.github.io/graph-matching/c](https://galudino.github.io/graph-matching/c/) |
+| C++ (in progress) | [`cpp/`](cpp/README.md) | `graph_matching_cpp` | [galudino.github.io/graph-matching/cpp](https://galudino.github.io/graph-matching/cpp/) |
 
 **The assignment** is part of the C implementation: see
 [c/README.md](c/README.md) and the guide in
@@ -27,10 +28,12 @@ ctest --preset debug
 Programs land in `build/<preset>/bin/`. Other presets are `release`,
 `asan-ubsan` (address and undefined-behavior sanitizers), and `assignment`
 (adds the C assignment's tests). Test names start with their
-implementation's folder, such as `c/`, so `ctest --preset debug -R '^c/'`
+implementation's folder, `c/` or `cpp/`, so `ctest --preset debug -R '^c/'`
 runs only the C tests.
 
-Each implementation also builds on its own, such as `cmake -S c -B build/c-only`.
+Each implementation also builds on its own, such as `cmake -S c -B build/c-only`,
+and `-DGRAPH_MATCHING_BUILD_C=OFF` or `-DGRAPH_MATCHING_BUILD_CPP=OFF` leaves
+one out of the root build.
 
 ## Test matrices
 
@@ -72,6 +75,7 @@ compare another program:
 
 ```text
 c/                             C implementation (see c/README.md)
+cpp/                           C++ implementation (see cpp/README.md)
 data/test.mtx                  Small example matrix; downloads and generated matrices go here
 reference/match-sol            Reference binary
 scripts/                       Matrix download, reference comparison
@@ -83,9 +87,10 @@ CMakePresets.json              debug, release, asan-ubsan, assignment
 ## Releases
 
 Each implementation is released on its own. Pushing a tag named
-`<folder>/v<version>` publishes a GitHub release; the version must match
-`VERSION` in that folder's `CMakeLists.txt`, and an annotated tag's message
-becomes the release notes. The C release attaches the assignment PDF:
+`<folder>/v<version>`, such as `c/v1.1.0` or `cpp/v0.1.0`, publishes a GitHub
+release. The version must match `VERSION` in that folder's `CMakeLists.txt`,
+and an annotated tag's message becomes the release notes. The C release
+attaches the assignment PDF:
 
 ```bash
 git tag -a c/v1.1.0 -m "Release notes"

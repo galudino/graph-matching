@@ -171,19 +171,19 @@
         {
             "label": "Clang: Format Check",
             "type": "shell",
-            "command": "find c/app c/components c/tests -type f \\( -name '*.c' -o -name '*.cpp' -o -name '*.h' -o -name '*.hpp' \\) -exec clang-format --dry-run --Werror {} +",
+            "command": "find c/app c/components c/tests cpp/app cpp/components cpp/tests -type f \\( -name '*.c' -o -name '*.cpp' -o -name '*.h' -o -name '*.hpp' \\) -exec clang-format --dry-run --Werror {} +",
             "problemMatcher": []
         },
         {
             "label": "Clang: Format All",
             "type": "shell",
-            "command": "find c/app c/components c/tests -type f \\( -name '*.c' -o -name '*.cpp' -o -name '*.h' -o -name '*.hpp' \\) -exec clang-format -i {} +",
+            "command": "find c/app c/components c/tests cpp/app cpp/components cpp/tests -type f \\( -name '*.c' -o -name '*.cpp' -o -name '*.h' -o -name '*.hpp' \\) -exec clang-format -i {} +",
             "problemMatcher": []
         },
         {
             "label": "Clang: Tidy",
             "type": "shell",
-            "command": "run-clang-tidy -quiet -p '${command:cmake.buildDirectory}' '^${workspaceFolder}/c/(app|components|tests)/.*\\.(c|cpp)$'",
+            "command": "run-clang-tidy -quiet -p '${command:cmake.buildDirectory}' '^${workspaceFolder}/(c|cpp)/(app|components|tests)/.*\\.(c|cpp)$'",
             "dependsOn": "CMake: Configure",
             "problemMatcher": []
         }
