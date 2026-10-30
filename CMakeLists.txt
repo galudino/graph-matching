@@ -56,8 +56,11 @@ include(cmake/CompilerWarnings.cmake)
 #------------------------------------------------------------------------------
 
 add_subdirectory(third_party/mmio)
+add_subdirectory(components/support)
+add_subdirectory(components/graph)
+add_subdirectory(components/matching)
+add_subdirectory(components/handshake)
 add_subdirectory(components/generator)
-add_subdirectory(components/match)
 
 #------------------------------------------------------------------------------
 # Command-line executable

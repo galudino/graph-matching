@@ -1,19 +1,22 @@
-# Adjustments for this C component, on top of the project's checks.
+# Adjustments for the C components, on top of the project's checks.
 #
-# - modernize-use-using, modernize-macro-to-enum: C++-only advice that fires
-#   on these C headers when C++ tests include them.
-# - bugprone-easily-swappable-parameters: the assignment fixes these
-#   functions' signatures, which take runs of int and int * parameters.
+# - modernize-use-using, modernize-macro-to-enum, performance-enum-size:
+#   C++-only advice.
+# - bugprone-easily-swappable-parameters: C APIs pass runs of ints, such as
+#   (vertex_count, edge_count); the types cannot tell them apart.
 # - DeprecatedOrUnsafeBufferHandling: asks for C11 Annex K functions such as
 #   fprintf_s, which glibc does not provide.
-# - performance-no-int-to-ptr: the worker threads return their pass count
-#   through pthread_exit()'s void * on purpose.
 #
-# Revisit this file when the code moves to C++.
+# components/generator (C++) turns these back on. Revisit this file when the
+# code moves to C++.
 InheritParentConfig: true
 Checks: >
   -modernize-use-using,
   -modernize-macro-to-enum,
+  -performance-enum-size,
   -bugprone-easily-swappable-parameters,
-  -clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling,
-  -performance-no-int-to-ptr
+  -clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling
+CheckOptions:
+  # The logging macros (logd, loge, logw, logi) are lowercase by choice.
+  - key: readability-identifier-naming.MacroDefinitionIgnoredRegexp
+    value: '^log[dewi]$'

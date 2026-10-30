@@ -1,0 +1,8 @@
+# C++ component: restore the checks that components/.clang-tidy turns off
+# for C.
+InheritParentConfig: true
+Checks: >
+  modernize-use-using,
+  modernize-macro-to-enum,
+  performance-enum-size,
+  bugprone-easily-swappable-parameters
