@@ -7,7 +7,7 @@ add_executable(graph_matching
 )
 
 target_link_libraries(graph_matching PRIVATE
-    graph_matching::match
+    graph_matching::handshake
 )
 
 set_project_warnings(graph_matching)
@@ -23,7 +23,8 @@ target_link_libraries(generate_matrix PRIVATE
 set_project_warnings(generate_matrix)
 
 #
-# Run targets: cmake --build --preset debug --target run_one_way (or run_n_ways).
+# Run targets: cmake --build --preset debug --target run_one_way (or run_n_ways,
+# run_greedy).
 # Pick the input with -DGRAPH_MATCHING_RUN_MATRIX=..., and so on, at configure time.
 #
 
@@ -38,7 +39,7 @@ add_custom_target(run_one_way
     COMMAND graph_matching
         "${GRAPH_MATCHING_RUN_MATRIX}"
         "${PROJECT_BINARY_DIR}/one_way.out"
-        oneWay
+        one-way
         "${GRAPH_MATCHING_RUN_THREADS}"
     DEPENDS graph_matching
     WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}"
@@ -51,12 +52,24 @@ add_custom_target(run_n_ways
     COMMAND graph_matching
         "${GRAPH_MATCHING_RUN_MATRIX}"
         "${PROJECT_BINARY_DIR}/n_ways.out"
-        nWays
+        n-way
         "${GRAPH_MATCHING_RUN_HANDS}"
         "${GRAPH_MATCHING_RUN_THREADS}"
     DEPENDS graph_matching
     WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}"
     COMMENT "${GRAPH_MATCHING_RUN_HANDS}-way matching on ${GRAPH_MATCHING_RUN_MATRIX}; result in n_ways.out"
+    USES_TERMINAL
+    VERBATIM
+)
+
+add_custom_target(run_greedy
+    COMMAND graph_matching
+        "${GRAPH_MATCHING_RUN_MATRIX}"
+        "${PROJECT_BINARY_DIR}/greedy.out"
+        greedy
+    DEPENDS graph_matching
+    WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}"
+    COMMENT "Greedy matching on ${GRAPH_MATCHING_RUN_MATRIX}; result in greedy.out"
     USES_TERMINAL
     VERBATIM
 )

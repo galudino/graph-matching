@@ -1,0 +1,76 @@
+name: Docs
+
+# Generate the Doxygen API reference and publish it to GitHub Pages.
+# Nothing is committed to a branch: the built HTML is uploaded as a Pages
+# artifact and deployed, so the source tree stays free of generated output.
+#
+# One-time repo setup: Settings -> Pages -> Build and deployment ->
+# Source: "GitHub Actions".
+#
+# Publishes on push to main. Pull requests build the docs without publishing,
+# so a broken build shows up before merge. Use the "Run workflow" button
+# (workflow_dispatch) to publish on demand.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow one concurrent deployment; don't cancel an in-flight publish.
+concurrency:
+  group: pages-${{ github.event_name == 'pull_request' && github.ref || 'deploy' }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+
+    env:
+      CC: gcc-14
+      CXX: g++-14
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Configuring the project needs a C++23 compiler, even though only the
+      # docs target is built.
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ninja-build g++-14 doxygen graphviz
+
+      - name: Configure
+        run: cmake -S . -B build/docs -G Ninja -DGRAPH_MATCHING_BUILD_TESTS=OFF
+
+      - name: Generate API reference
+        run: cmake --build build/docs --target docs
+
+      - name: Verify HTML was produced
+        run: test -f build/docs/docs/html/index.html
+
+      - name: Upload Pages artifact
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: build/docs/docs/html
+
+  deploy:
+    if: github.event_name != 'pull_request'
+    needs: build
+    runs-on: ubuntu-latest
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

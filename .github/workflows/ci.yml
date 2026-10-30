@@ -68,9 +68,9 @@ jobs:
             | xargs clang-format-18 --dry-run --Werror
 
       - name: Configure
-        run: cmake --preset debug
+        run: cmake --preset assignment
 
       - name: Run clang-tidy
         run: |
-          run-clang-tidy-18 -quiet -warnings-as-errors='*' -clang-tidy-binary clang-tidy-18 -p build/debug \
+          run-clang-tidy-18 -quiet -warnings-as-errors='*' -clang-tidy-binary clang-tidy-18 -p build/assignment \
             "^${GITHUB_WORKSPACE}/(app|components|tests)/.*\.(c|cpp)$"

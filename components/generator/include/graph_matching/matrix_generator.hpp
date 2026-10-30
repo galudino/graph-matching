@@ -3,7 +3,8 @@
 /// \brief      Random test matrices in Matrix Market format.
 ///
 /// \details    Generates random undirected weighted graphs and writes them as
-///             symmetric Matrix Market files that read_mm() accepts.
+///             symmetric Matrix Market files that graph_init_from_matrix_market()
+///             accepts.
 ///
 /// \author     Gemuele (Gem) Aludino
 /// \date       2026-10-30
@@ -43,7 +44,7 @@ struct generator_options {
 ///
 /// \details    Draws vertices * average_degree / 2 edges between uniformly
 ///             random pairs of distinct vertices. A pair can be drawn twice;
-///             read_mm() keeps the heavier copy, so the graph can have
+///             the graph keeps the heavier copy, so it can have
 ///             slightly fewer edges than entries.
 ///
 /// \param      options     Size, weights, and seed.
@@ -51,7 +52,7 @@ struct generator_options {
 /// \return     The edges, in generation order.
 ///
 /// \throws     std::invalid_argument if an option is out of range, or the
-///             matrix would have more entries than read_mm() can hold.
+///             matrix would have more entries than a graph can hold.
 ///
 [[nodiscard]] std::vector<edge> generate_edges(const generator_options &options);
 

@@ -23,7 +23,7 @@ namespace graph_matching {
 
 namespace {
 
-/// read_mm() stores each entry twice in int-indexed arrays.
+/// graph_init_from_matrix_market() stores each edge twice in int-indexed arrays.
 constexpr std::int64_t max_entries = INT_MAX / 2;
 
 } // namespace
@@ -41,7 +41,8 @@ std::vector<edge> generate_edges(const generator_options &options) {
 
     const auto entries = static_cast<std::int64_t>(options.vertices) * options.average_degree / 2;
     if (entries > max_entries) {
-        throw std::invalid_argument("too many entries for read_mm(); lower vertices or degree");
+        throw std::invalid_argument(
+            "too many entries to read back as a graph; lower vertices or degree");
     }
 
     std::mt19937_64 engine(options.seed);

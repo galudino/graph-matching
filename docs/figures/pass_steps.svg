@@ -1,0 +1,30 @@
+<svg xmlns='http://www.w3.org/2000/svg' width='860' height='440' viewBox='0 0 860 440'>
+<defs><marker id='hand' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M 0 0 L 10 5 L 0 10 z' fill='#0969da'/></marker><marker id='reject' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M 0 0 L 10 5 L 0 10 z' fill='#cf222e'/></marker><marker id='flow' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M 0 0 L 10 5 L 0 10 z' fill='#6e7781'/></marker></defs>
+<rect width='100%' height='100%' fill='#ffffff'/>
+<text x='40' y='24' font-size='14' text-anchor='start' fill='#1f2328' font-weight='bold' font-family='Helvetica, Arial, sans-serif'>One pass: every thread runs every step on its own range</text>
+<rect x='40' y='40' width='300' height='44' rx='6' fill='#ddf4ff' stroke='#0969da' stroke-width='1'/>
+<text x='190' y='67' font-size='14' text-anchor='middle' fill='#1f2328' font-weight='bold' font-family='Helvetica, Arial, sans-serif'>one_way_extend_hand()</text>
+<text x='360' y='67' font-size='13' text-anchor='start' fill='#6e7781' font-weight='normal' font-family='Helvetica, Arial, sans-serif'>each vertex picks one neighbor</text>
+<line x1='190' y1='84' x2='190' y2='106' stroke='#6e7781' stroke-width='2' marker-end='url(#flow)'/>
+<text x='202' y='100' font-size='12' text-anchor='start' fill='#6e7781' font-weight='normal' font-family='Helvetica, Arial, sans-serif'>barrier</text>
+<rect x='40' y='110' width='300' height='44' rx='6' fill='#ddf4ff' stroke='#0969da' stroke-width='1'/>
+<text x='190' y='137' font-size='14' text-anchor='middle' fill='#1f2328' font-weight='bold' font-family='Helvetica, Arial, sans-serif'>one_way_check_handshakes()</text>
+<text x='360' y='137' font-size='13' text-anchor='start' fill='#6e7781' font-weight='normal' font-family='Helvetica, Arial, sans-serif'>mutual hands become pairs</text>
+<line x1='190' y1='154' x2='190' y2='176' stroke='#6e7781' stroke-width='2' marker-end='url(#flow)'/>
+<text x='202' y='170' font-size='12' text-anchor='start' fill='#6e7781' font-weight='normal' font-family='Helvetica, Arial, sans-serif'>barrier</text>
+<rect x='40' y='180' width='300' height='44' rx='6' fill='#fbefff' stroke='#8250df' stroke-width='1'/>
+<text x='190' y='207' font-size='14' text-anchor='middle' fill='#1f2328' font-weight='bold' font-family='Helvetica, Arial, sans-serif'>worklist_count_unmatched()</text>
+<text x='360' y='207' font-size='13' text-anchor='start' fill='#6e7781' font-weight='normal' font-family='Helvetica, Arial, sans-serif'>per-thread counts</text>
+<line x1='190' y1='224' x2='190' y2='246' stroke='#6e7781' stroke-width='2' marker-end='url(#flow)'/>
+<text x='202' y='240' font-size='12' text-anchor='start' fill='#6e7781' font-weight='normal' font-family='Helvetica, Arial, sans-serif'>barrier</text>
+<rect x='40' y='250' width='300' height='44' rx='6' fill='#fbefff' stroke='#8250df' stroke-width='1'/>
+<text x='190' y='277' font-size='14' text-anchor='middle' fill='#1f2328' font-weight='bold' font-family='Helvetica, Arial, sans-serif'>prefix_sum_exclusive()</text>
+<text x='360' y='277' font-size='13' text-anchor='start' fill='#6e7781' font-weight='normal' font-family='Helvetica, Arial, sans-serif'>thread 0 only (provided)</text>
+<line x1='190' y1='294' x2='190' y2='316' stroke='#6e7781' stroke-width='2' marker-end='url(#flow)'/>
+<text x='202' y='310' font-size='12' text-anchor='start' fill='#6e7781' font-weight='normal' font-family='Helvetica, Arial, sans-serif'>barrier</text>
+<rect x='40' y='320' width='300' height='44' rx='6' fill='#fbefff' stroke='#8250df' stroke-width='1'/>
+<text x='190' y='347' font-size='14' text-anchor='middle' fill='#1f2328' font-weight='bold' font-family='Helvetica, Arial, sans-serif'>worklist_compact()</text>
+<text x='360' y='347' font-size='13' text-anchor='start' fill='#6e7781' font-weight='normal' font-family='Helvetica, Arial, sans-serif'>next pass's worklist</text>
+<text x='40' y='400' font-size='13' text-anchor='start' fill='#1f2328' font-weight='normal' font-family='Helvetica, Arial, sans-serif'>After the prefix sum, if write_offsets[thread_count] is 0, every vertex is finished and the threads stop.</text>
+<text x='40' y='422' font-size='13' text-anchor='start' fill='#1f2328' font-weight='normal' font-family='Helvetica, Arial, sans-serif'>N-way replaces the first step with n_way_find_candidates(), a barrier, then n_way_extend_hand().</text>
+</svg>

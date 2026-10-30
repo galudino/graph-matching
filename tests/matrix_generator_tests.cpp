@@ -6,9 +6,8 @@
 /// \date       2026-10-30
 ///
 
-#include <graph_matching/graph_data.h>
+#include <graph_matching/graph.h>
 #include <graph_matching/matrix_generator.hpp>
-#include <graph_matching/utils.h>
 
 #include <doctest/doctest.h>
 
@@ -74,7 +73,7 @@ TEST_CASE("generate_edges rejects out-of-range options") {
                     std::invalid_argument);
 }
 
-TEST_CASE("generated matrices read back with read_mm") {
+TEST_CASE("generated matrices read back with graph_init_from_matrix_market") {
     const graph_matching::generator_options options{.vertices = 300, .average_degree = 6};
     const auto edges = graph_matching::generate_edges(options);
 
@@ -84,24 +83,22 @@ TEST_CASE("generated matrices read back with read_mm") {
         graph_matching::write_matrix_market(file, options, edges);
     }
 
-    graph_data graph{};
-    read_mm(path.c_str(), &graph);
+    graph input{};
+    REQUIRE(graph_init_from_matrix_market(&input, path.c_str()) == STATUS_OK);
 
-    CHECK(graph.n_nodes == 300);
+    CHECK(input.vertex_count == 300);
 
-    // Each distinct edge is stored in both directions; repeated pairs collapse.
-    CHECK(graph.n_edges % 2 == 0);
-    CHECK(graph.n_edges <= 2 * static_cast<int>(edges.size()));
-    CHECK(graph.n_edges > 2 * static_cast<int>(edges.size()) * 9 / 10);
+    // Repeated pairs collapse into one edge.
+    CHECK(input.edge_count <= static_cast<int>(edges.size()));
+    CHECK(input.edge_count > static_cast<int>(edges.size()) * 9 / 10);
 
-    // Every stored entry is in exactly one vertex's neighbor list.
-    const std::span degree(graph.degree, static_cast<std::size_t>(graph.n_nodes));
+    // Every edge appears in both of its endpoints' neighbor lists.
     int total_degree = 0;
-    for (const int d : degree) {
-        total_degree += d;
+    for (int v = 0; v < input.vertex_count; ++v) {
+        total_degree += graph_degree(&input, v);
     }
-    CHECK(total_degree == graph.n_edges);
+    CHECK(total_degree == 2 * input.edge_count);
 
-    graph_free(&graph);
+    graph_deinit(&input);
     std::filesystem::remove(path);
 }

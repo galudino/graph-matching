@@ -16,6 +16,14 @@
             "args": {
                 "targetName": "graph_matching_tests"
             }
+        },
+        {
+            "id": "assignmentTestsPath",
+            "type": "command",
+            "command": "cmake.launchTargetPath",
+            "args": {
+                "targetName": "graph_matching_assignment_tests"
+            }
         }
     ],
     "configurations": [
@@ -27,7 +35,7 @@
             "args": [
                 "${workspaceFolder}/data/test.mtx",
                 "${workspaceFolder}/build/test.out",
-                "oneWay",
+                "one-way",
                 "2"
             ],
             "stopAtEntry": false,
@@ -52,7 +60,7 @@
             "args": [
                 "${workspaceFolder}/data/test.mtx",
                 "${workspaceFolder}/build/test.out",
-                "nWays",
+                "n-way",
                 "2",
                 "2"
             ],
@@ -75,6 +83,19 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${input:testsPath}",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "miDebuggerPath": "/usr/bin/gdb"
+        },
+        {
+            "name": "CMake: Debug graph_matching_assignment_tests",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${input:assignmentTestsPath}",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
