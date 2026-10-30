@@ -16,6 +16,7 @@ project(
 #------------------------------------------------------------------------------
 
 option(GRAPH_MATCHING_BUILD_C "Build the C implementation in c/" ON)
+option(GRAPH_MATCHING_BUILD_CPP "Build the C++ implementation in cpp/" ON)
 
 # Tells each project it is the main build, so it builds its tests and docs.
 set(GRAPH_MATCHING_WORKSPACE ON)
@@ -25,4 +26,8 @@ enable_testing()
 
 if(GRAPH_MATCHING_BUILD_C)
     add_subdirectory(c)
+endif()
+
+if(GRAPH_MATCHING_BUILD_CPP)
+    add_subdirectory(cpp)
 endif()

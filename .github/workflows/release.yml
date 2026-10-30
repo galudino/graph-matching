@@ -1,8 +1,9 @@
 name: Release
 
 # Publish a GitHub release when an implementation's version tag is pushed:
-# c/v1.2.3 for the C project in c/. Each implementation is versioned on its
-# own, and the tag must match the VERSION in its CMakeLists.txt.
+# c/v1.2.3 for the C project in c/, cpp/v1.2.3 for the C++ project in cpp/.
+# Each implementation is versioned on its own, and the tag must match the
+# VERSION in its CMakeLists.txt.
 #
 # The release notes are the tag's message (git tag -a), or GitHub's generated
 # notes for a tag without one. The implementation's assignment PDF, if it has
@@ -13,7 +14,7 @@ name: Release
 
 on:
   push:
-    tags: ['c/v*']
+    tags: ['c/v*', 'cpp/v*']
 
 permissions:
   contents: write
@@ -49,6 +50,7 @@ jobs:
           project=${TAG%%/*}
           case $project in
           c) name=C ;;
+          cpp) name=C++ ;;
           *) name=$project ;;
           esac
           title="graph-matching $name ${TAG#*/v}"
