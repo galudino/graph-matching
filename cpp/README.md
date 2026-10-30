@@ -46,7 +46,8 @@ threads.
 
 ```text
 app/main.cpp                   Command-line matcher (graph_matching_cpp)
-components/                    Libraries, one folder each (none yet)
+components/
+    graph/                     edge, and graph (adjacency arrays, Matrix Market reader)
 tests/                         Tests
 docs/mainpage.md               Front page of the API reference
 cmake/CompilerWarnings.cmake   Warning flags
