@@ -12,6 +12,16 @@ target_link_libraries(graph_matching PRIVATE
 
 set_project_warnings(graph_matching)
 
+add_executable(generate_matrix
+    generate_matrix.cpp
+)
+
+target_link_libraries(generate_matrix PRIVATE
+    graph_matching::generator
+)
+
+set_project_warnings(generate_matrix)
+
 #
 # Run targets: cmake --build --preset debug --target run_one_way (or run_n_ways).
 # Pick the input with -DGRAPH_MATCHING_RUN_MATRIX=..., and so on, at configure time.
@@ -47,6 +57,23 @@ add_custom_target(run_n_ways
     DEPENDS graph_matching
     WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}"
     COMMENT "${GRAPH_MATCHING_RUN_HANDS}-way matching on ${GRAPH_MATCHING_RUN_MATRIX}; result in n_ways.out"
+    USES_TERMINAL
+    VERBATIM
+)
+
+#
+# Generated test matrices: cmake --build --preset debug --target generate_matrices
+# writes small, medium, and large matrices to data/generated/.
+#
+
+set(GRAPH_MATCHING_GENERATED_DIR "${PROJECT_SOURCE_DIR}/data/generated")
+
+add_custom_target(generate_matrices
+    COMMAND generate_matrix "${GRAPH_MATCHING_GENERATED_DIR}/small.mtx" 1000 8
+    COMMAND generate_matrix "${GRAPH_MATCHING_GENERATED_DIR}/medium.mtx" 100000 16
+    COMMAND generate_matrix "${GRAPH_MATCHING_GENERATED_DIR}/large.mtx" 1000000 16
+    DEPENDS generate_matrix
+    COMMENT "Writing generated test matrices to data/generated/"
     USES_TERMINAL
     VERBATIM
 )

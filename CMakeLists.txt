@@ -56,6 +56,7 @@ include(cmake/CompilerWarnings.cmake)
 #------------------------------------------------------------------------------
 
 add_subdirectory(third_party/mmio)
+add_subdirectory(components/generator)
 add_subdirectory(components/match)
 
 #------------------------------------------------------------------------------

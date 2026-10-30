@@ -18,8 +18,9 @@ Each function is declared, with its inputs and outputs, in the matching header
 under `components/match/include/graph_matching/`.
 
 The files start as empty functions so that the project builds. Until they are
-implemented, the program hangs instead of producing a matching: the filter
-step never reports that the work list is empty.
+implemented, the program doesn't produce a real matching: because the filter
+never fills in its counts, it either hangs or stops at once with every vertex
+unmatched, depending on what memory happens to contain.
 
 ### Names compared with the starter code
 
@@ -46,7 +47,8 @@ ctest --preset debug
 ```
 
 The unit tests cover the harness (graph reading, sorting, prefix sums,
-result I/O, and `check_result`), not the assignment functions.
+result I/O, and `check_result`) and the matrix generator, not the assignment
+functions.
 
 Run with the same arguments as the original `match` program:
 
@@ -70,6 +72,7 @@ vertex:
 | **Run: N-Way Matching** | Writes the result to `<build dir>/n_ways.out` |
 | **Run: Compare One-Way with Reference** | Runs `compare_with_reference.sh` on your build |
 | **Run: Compare N-Way with Reference** | The same, for N-way |
+| **Data: Generate Test Matrices** | Writes the small, medium, and large generated matrices |
 | **Data: Fetch Test Matrices** | Runs `fetch_matrices.sh` for all six matrices |
 
 To stop a run that hangs, use the trash-can icon on its terminal.
@@ -103,8 +106,39 @@ presets.
 
 ## Test matrices
 
-`data/test.mtx` is a 9-vertex example. Six larger test matrices come from the
-SuiteSparse Matrix Collection:
+`data/test.mtx` is a 9-vertex example. For anything larger, generate random
+matrices or download the SuiteSparse ones.
+
+### Generated matrices
+
+`generate_matrix` writes a random graph as a symmetric Matrix Market file:
+
+```bash
+./build/debug/app/generate_matrix data/generated/mine.mtx 50000 12        # 50,000 vertices, average degree 12
+./build/debug/app/generate_matrix data/generated/mine.mtx 50000 12 100 7  # weights 1-100, seed 7
+```
+
+Weights are whole numbers from 1 to the maximum (default 10), so many edges
+tie and the tie-breaking by vertex ID gets exercised; raise the maximum for
+fewer ties. The same arguments always produce the same file.
+
+The `generate_matrices` target (or the **Data: Generate Test Matrices** task)
+writes a standard set to `data/generated/`, which git ignores:
+
+| File | Vertices | Average degree | Size |
+|------|----------|----------------|------|
+| `small.mtx` | 1,000 | 8 | 39 KB |
+| `medium.mtx` | 100,000 | 16 | 11 MB |
+| `large.mtx` | 1,000,000 | 16 | 122 MB |
+
+```bash
+cmake --build --preset debug --target generate_matrices
+```
+
+### SuiteSparse matrices
+
+The six larger matrices the assignment used come from the SuiteSparse Matrix
+Collection:
 
 ```bash
 ./scripts/fetch_matrices.sh              # all six, smallest first
@@ -112,9 +146,17 @@ SuiteSparse Matrix Collection:
 ```
 
 They are extracted to `data/<name>/<name>.mtx` and ignored by git. `ldoor`
-and `af_shell10` are hundreds of megabytes each. If a download fails, check
-the matrix's page (for example <https://sparse.tamu.edu/Williams/cant>)
-for current links.
+and `af_shell10` are hundreds of megabytes each.
+
+The download host has refused requests from cloud machines, including
+Codespaces. If it refuses you, download the `.tar.gz` from a browser on
+another network instead (the matrix's page, such as
+<https://sparse.tamu.edu/Williams/cant>, has the link), drag it into `data/`
+in the Explorer, and extract it there:
+
+```bash
+cd data && tar -xzf cant.tar.gz && rm cant.tar.gz
+```
 
 ## Checking against the reference
 
@@ -141,7 +183,9 @@ components/match/           Matching library
     src/*_wrapper.c           Thread drivers (harness)
     src/utils.c, src/sort.c   Graph I/O and helpers (harness)
 third_party/mmio/           NIST Matrix Market I/O library, unchanged
-tests/                      doctest unit tests for the harness
+components/generator/       Random test matrix generator (C++)
+app/generate_matrix.cpp     Generator command-line tool
+tests/                      doctest unit tests for the harness and generator
 data/test.mtx               Small example matrix
 docs/                       Doxygen configuration
 reference/match-sol         Reference binary

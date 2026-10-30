@@ -104,6 +104,16 @@
             "problemMatcher": []
         },
         {
+            "label": "Data: Generate Test Matrices",
+            "type": "cmake",
+            "command": "build",
+            "preset": "${command:cmake.activeBuildPresetName}",
+            "targets": [
+                "generate_matrices"
+            ],
+            "problemMatcher": []
+        },
+        {
             "label": "Data: Fetch Test Matrices",
             "type": "process",
             "command": "${workspaceFolder}/scripts/fetch_matrices.sh",
@@ -157,9 +167,12 @@
         {
             "id": "matrix",
             "type": "pickString",
-            "description": "Matrix to match (run Data: Fetch Test Matrices for all but test.mtx)",
+            "description": "Matrix to match (Data: Generate Test Matrices creates data/generated/)",
             "options": [
                 "data/test.mtx",
+                "data/generated/small.mtx",
+                "data/generated/medium.mtx",
+                "data/generated/large.mtx",
                 "data/dawson5/dawson5.mtx",
                 "data/cant/cant.mtx",
                 "data/consph/consph.mtx",
