@@ -38,6 +38,14 @@
                 "CMAKE_EXE_LINKER_FLAGS": "-fsanitize=address,undefined",
                 "CMAKE_SHARED_LINKER_FLAGS": "-fsanitize=address,undefined"
             }
+        },
+        {
+            "name": "assignment",
+            "displayName": "Debug + assignment tests",
+            "inherits": "debug",
+            "cacheVariables": {
+                "GRAPH_MATCHING_TEST_ASSIGNMENT": "ON"
+            }
         }
     ],
     "buildPresets": [
@@ -52,6 +60,10 @@
         {
             "name": "asan-ubsan",
             "configurePreset": "asan-ubsan"
+        },
+        {
+            "name": "assignment",
+            "configurePreset": "assignment"
         }
     ],
     "testPresets": [
@@ -76,6 +88,11 @@
             "name": "asan-ubsan",
             "inherits": "base",
             "configurePreset": "asan-ubsan"
+        },
+        {
+            "name": "assignment",
+            "inherits": "base",
+            "configurePreset": "assignment"
         }
     ]
 }

@@ -40,7 +40,7 @@
             "args": [
                 "${input:matrix}",
                 "${command:cmake.buildDirectory}/one_way.out",
-                "oneWay",
+                "one-way",
                 "${input:threads}"
             ],
             "options": {
@@ -56,9 +56,24 @@
             "args": [
                 "${input:matrix}",
                 "${command:cmake.buildDirectory}/n_ways.out",
-                "nWays",
+                "n-way",
                 "${input:hands}",
                 "${input:threads}"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "dependsOn": "CMake: Build",
+            "problemMatcher": []
+        },
+        {
+            "label": "Run: Greedy Matching",
+            "type": "process",
+            "command": "${command:cmake.buildDirectory}/app/graph_matching",
+            "args": [
+                "${input:matrix}",
+                "${command:cmake.buildDirectory}/greedy.out",
+                "greedy"
             ],
             "options": {
                 "cwd": "${workspaceFolder}"
@@ -72,7 +87,7 @@
             "command": "${workspaceFolder}/scripts/compare_with_reference.sh",
             "args": [
                 "${input:matrix}",
-                "oneWay",
+                "one-way",
                 "${input:threads}"
             ],
             "options": {
@@ -90,7 +105,7 @@
             "command": "${workspaceFolder}/scripts/compare_with_reference.sh",
             "args": [
                 "${input:matrix}",
-                "nWays",
+                "n-way",
                 "${input:hands}",
                 "${input:threads}"
             ],
@@ -128,6 +143,16 @@
             "command": "ctest",
             "preset": "${command:cmake.activeTestPresetName}",
             "dependsOn": "CMake: Build",
+            "problemMatcher": []
+        },
+        {
+            "label": "Test: Assignment",
+            "type": "shell",
+            "command": "cmake --preset assignment && cmake --build --preset assignment && ctest --preset assignment",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": "test",
             "problemMatcher": []
         },
         {
