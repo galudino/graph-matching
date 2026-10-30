@@ -99,3 +99,13 @@ CLASS_GRAPH            = YES
 
 CALL_GRAPH             = NO
 CALLER_GRAPH           = NO
+
+#------------------------------------------------------------------------------
+# Preprocessor
+#------------------------------------------------------------------------------
+
+# Hide compiler attributes so declarations parse cleanly.
+ENABLE_PREPROCESSING   = YES
+MACRO_EXPANSION        = YES
+EXPAND_ONLY_PREDEF     = YES
+PREDEFINED             = "GRAPH_MATCHING_PRINTF_FORMAT(format_index,first_arg)="

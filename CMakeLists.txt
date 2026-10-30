@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.25)
 project(
     graph_matching
     VERSION 1.0.0
-    DESCRIPTION "Modern C/C++ command-line graph_matching project"
+    DESCRIPTION "Parallel graph matching with one-way and N-way handshaking"
     LANGUAGES C CXX
 )
 
@@ -55,9 +55,9 @@ include(cmake/CompilerWarnings.cmake)
 # Components
 #------------------------------------------------------------------------------
 
-add_subdirectory(components/greeting)
-add_subdirectory(components/ring_buffer)
-add_subdirectory(components/sensor)
+add_subdirectory(third_party/mmio)
+add_subdirectory(components/generator)
+add_subdirectory(components/match)
 
 #------------------------------------------------------------------------------
 # Command-line executable

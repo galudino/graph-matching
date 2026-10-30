@@ -1,0 +1,23 @@
+# Adjustments for this C component, on top of the project's checks.
+#
+# - modernize-use-using, modernize-macro-to-enum: C++-only advice that fires
+#   on these C headers when C++ tests include them.
+# - bugprone-easily-swappable-parameters: the assignment fixes these
+#   functions' signatures, which take runs of int and int * parameters.
+# - DeprecatedOrUnsafeBufferHandling: asks for C11 Annex K functions such as
+#   fprintf_s, which glibc does not provide.
+# - performance-no-int-to-ptr: the worker threads return their pass count
+#   through pthread_exit()'s void * on purpose.
+#
+# Revisit this file when the code moves to C++.
+InheritParentConfig: true
+Checks: >
+  -modernize-use-using,
+  -modernize-macro-to-enum,
+  -bugprone-easily-swappable-parameters,
+  -clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling,
+  -performance-no-int-to-ptr
+CheckOptions:
+  # The logging macros are lowercase by choice.
+  - key: readability-identifier-naming.MacroDefinitionIgnoredRegexp
+    value: '^log[dewi]$'

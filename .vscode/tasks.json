@@ -34,10 +34,92 @@
             "problemMatcher": []
         },
         {
-            "label": "CMake: Run",
+            "label": "Run: One-Way Matching",
             "type": "process",
-            "command": "${command:cmake.launchTargetPath}",
+            "command": "${command:cmake.buildDirectory}/app/graph_matching",
+            "args": [
+                "${input:matrix}",
+                "${command:cmake.buildDirectory}/one_way.out",
+                "oneWay",
+                "${input:threads}"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
             "dependsOn": "CMake: Build",
+            "problemMatcher": []
+        },
+        {
+            "label": "Run: N-Way Matching",
+            "type": "process",
+            "command": "${command:cmake.buildDirectory}/app/graph_matching",
+            "args": [
+                "${input:matrix}",
+                "${command:cmake.buildDirectory}/n_ways.out",
+                "nWays",
+                "${input:hands}",
+                "${input:threads}"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "dependsOn": "CMake: Build",
+            "problemMatcher": []
+        },
+        {
+            "label": "Run: Compare One-Way with Reference",
+            "type": "process",
+            "command": "${workspaceFolder}/scripts/compare_with_reference.sh",
+            "args": [
+                "${input:matrix}",
+                "oneWay",
+                "${input:threads}"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}",
+                "env": {
+                    "GRAPH_MATCHING_BIN": "${command:cmake.buildDirectory}/app/graph_matching"
+                }
+            },
+            "dependsOn": "CMake: Build",
+            "problemMatcher": []
+        },
+        {
+            "label": "Run: Compare N-Way with Reference",
+            "type": "process",
+            "command": "${workspaceFolder}/scripts/compare_with_reference.sh",
+            "args": [
+                "${input:matrix}",
+                "nWays",
+                "${input:hands}",
+                "${input:threads}"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}",
+                "env": {
+                    "GRAPH_MATCHING_BIN": "${command:cmake.buildDirectory}/app/graph_matching"
+                }
+            },
+            "dependsOn": "CMake: Build",
+            "problemMatcher": []
+        },
+        {
+            "label": "Data: Generate Test Matrices",
+            "type": "cmake",
+            "command": "build",
+            "preset": "${command:cmake.activeBuildPresetName}",
+            "targets": [
+                "generate_matrices"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "Data: Fetch Test Matrices",
+            "type": "process",
+            "command": "${workspaceFolder}/scripts/fetch_matrices.sh",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
             "problemMatcher": []
         },
         {
@@ -79,6 +161,49 @@
             "command": "run-clang-tidy -quiet -p '${command:cmake.buildDirectory}' '^${workspaceFolder}/(app|components|tests)/.*\\.(c|cpp)$'",
             "dependsOn": "CMake: Configure",
             "problemMatcher": []
+        }
+    ],
+    "inputs": [
+        {
+            "id": "matrix",
+            "type": "pickString",
+            "description": "Matrix to match (Data: Generate Test Matrices creates data/generated/)",
+            "options": [
+                "data/test.mtx",
+                "data/generated/small.mtx",
+                "data/generated/medium.mtx",
+                "data/generated/large.mtx",
+                "data/dawson5/dawson5.mtx",
+                "data/cant/cant.mtx",
+                "data/consph/consph.mtx",
+                "data/hood/hood.mtx",
+                "data/ldoor/ldoor.mtx",
+                "data/af_shell10/af_shell10.mtx"
+            ],
+            "default": "data/test.mtx"
+        },
+        {
+            "id": "threads",
+            "type": "pickString",
+            "description": "Number of threads",
+            "options": [
+                "1",
+                "2",
+                "4",
+                "8"
+            ],
+            "default": "4"
+        },
+        {
+            "id": "hands",
+            "type": "pickString",
+            "description": "Hands per vertex (N)",
+            "options": [
+                "2",
+                "3",
+                "4"
+            ],
+            "default": "2"
         }
     ]
 }

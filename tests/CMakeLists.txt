@@ -16,16 +16,20 @@ FetchContent_MakeAvailable(doctest)
 include("${doctest_SOURCE_DIR}/scripts/cmake/doctest.cmake")
 
 add_executable(graph_matching_tests
-    greeting_tests.cpp
-    ring_buffer_tests.cpp
-    sensor_tests.cpp
+    matrix_generator_tests.cpp
+    read_mm_tests.cpp
+    sort_tests.cpp
+    utils_tests.cpp
 )
 
 target_link_libraries(graph_matching_tests PRIVATE
-    graph_matching::greeting
-    graph_matching::ring_buffer
-    graph_matching::sensor
+    graph_matching::generator
+    graph_matching::match
     doctest::doctest_with_main
+)
+
+target_compile_definitions(graph_matching_tests PRIVATE
+    GRAPH_MATCHING_DATA_DIR="${PROJECT_SOURCE_DIR}/data"
 )
 
 set_project_warnings(graph_matching_tests)

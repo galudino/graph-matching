@@ -1,222 +1,219 @@
 # graph-matching
 
-A C17/C++23 CMake template for sketching projects in GitHub Codespaces,
-including from an iPad. Open a Codespace and it arrives configured and
-built: run, debug, and test from the CMake Tools status bar without
-touching a terminal.
+Parallel graph matching with one-way and N-way handshaking, using POSIX
+threads. This revisits a course project: the algorithm is implemented in C
+first, as the assignment asks, then refactored to C++.
 
-## Features
+## The assignment
 
-- C17 and C++23 (GCC 14, so `std::print` works)
-- One example of each library kind: compiled C++, C with an `extern "C"`
-  header, and header-only C++
-- CMake presets with Ninja: `debug`, `release`, `asan-ubsan`
-- doctest unit tests, discovered per test case by CTest and the VS Code
-  Test Explorer
-- clang-format, clang-tidy, and Doxygen
-- GitHub Actions CI: GCC 14 and Clang 18, all presets, warnings as errors,
-  plus a format and lint job
+Three files are the assignment; everything else is the starter code's harness:
 
-## Quick start in Codespaces
+| File | Functions |
+|------|-----------|
+| `components/match/src/oneway.c` | `extend_one_hand`, `check_handshaking` |
+| `components/match/src/filter.c` | `count_unmatched_vertices`, `update_remain_nodes_index` |
+| `components/match/src/nways.c` | `generate_n_way_graph`, `prune_n_way_graph` (extra credit) |
 
-From the template's page on GitHub, pick one:
+Each function is declared, with its inputs and outputs, in the matching header
+under `components/match/include/graph_matching/`.
 
-- **To try an idea:** **Use this template** → **Open in a codespace**. No
-  repository is created yet. If the sketch is worth keeping, use
-  **Publish Branch** in the Source Control view to create one. An
-  unpublished Codespace is deleted after a period of inactivity (30 days
-  by default), and its work with it.
-- **To start a project:** **Use this template** → **Create a new
-  repository**, then in the new repository **Code** → **Codespaces** →
-  **Create codespace on main**.
+The files start as empty functions so that the project builds. Until they are
+implemented, the program doesn't produce a real matching: because the filter
+never fills in its counts, it either hangs or stops at once with every vertex
+unmatched, depending on what memory happens to contain.
 
-Either way, each sketch gets its own Codespace. Then:
+### Names compared with the starter code
 
-1. Wait for the `postCreateCommand` to finish configuring and building.
-2. Use the CMake Tools buttons in the status bar to build, run, debug, and
-   test. Every task in `.vscode/tasks.json` is also available from the
-   Command Palette under **Tasks: Run Task**.
+The code uses snake_case throughout, so names differ from the starter code's
+camelCase:
 
-### Sketch first, publish later
+| Starter code | Here |
+|------|------|
+| `GraphData`, `nNodes`, `nEdges` | `graph_data`, `n_nodes`, `n_edges` |
+| `nodeToProcess`, `newNodeToProcess` | `node_to_process`, `new_node_to_process` |
+| `strongNeighbor`, `nodeCount`, `startLocations` | `strong_neighbor`, `node_count`, `start_locations` |
+| `nWays`, `nWayGraph`, `nWayGraphDegree` | `n_ways`, `n_way_graph`, `n_way_graph_degree` |
+| `threadId`, `threadNum`, `nodeNum` | `thread_id`, `thread_num`, `node_num` |
+| `readmm`, `DataStructure.h`, `*wrapper.c` | `read_mm`, `graph_data.h`, `*_wrapper.c` |
 
-1. **Use this template** → **Open in a codespace**. The template's files
-   arrive already committed.
-2. From the workspace root, name the sketch and commit
-   ([details below](#start-a-new-sketch)):
+Input arrays are now `const int *` in the function signatures.
 
-   ```bash
-   ./scripts/rename.sh graph_matching
-   git add -A && git commit -m "Rename project to graph_matching"
-   ```
+## Build, test, and run
 
-3. Work as usual, committing as you go.
-4. If the sketch is worth keeping, use **Publish Branch** in the Source
-   Control view (or the cloud icon next to the branch name in the status
-   bar) and choose a repository name. The Codespace you're in is now
-   connected to the new repository: keep working and pushing from it.
-5. If it isn't, delete the Codespace from
-   [github.com/codespaces](https://github.com/codespaces), or let it
-   expire.
+```bash
+cmake --preset debug
+cmake --build --preset debug
+ctest --preset debug
+```
 
-The workspace folder stays `/workspaces/graph-matching` for the life of the
-Codespace, even after you publish. Leave it alone: renaming it while the
-Codespace is open can leave the editor without a workspace.
+The unit tests cover the harness (graph reading, sorting, prefix sums,
+result I/O, and `check_result`) and the matrix generator, not the assignment
+functions.
 
-A Codespace's folder is named after the repository it was created from,
-so a different folder name needs a repository first. To get
-`/workspaces/graph-matching`, publish the sketch as `graph-matching`,
-push everything, then open a new Codespace from that repository and
-delete the old one. Before deleting a Codespace for any reason, commit
-and push everything: uncommitted changes, stashes, and unpushed branches
-exist only inside it.
+Run with the same arguments as the original `match` program:
 
-### iPad tips
+```bash
+./build/debug/app/graph_matching data/test.mtx test.out oneWay 4      # 4 threads
+./build/debug/app/graph_matching data/test.mtx test.out nWays 2 4     # 2 hands, 4 threads
+```
 
-- iPad keyboards usually have no function keys, so F5/F7-style shortcuts
-  are out. The status bar buttons and **Tasks: Run Task** cover the same
-  actions.
-- The Command Palette is also in the menu (☰) → **View** → **Command Palette**.
-- Safari may not draw VS Code's Markdown preview fully. To preview a file
-  in its own tab, rendered by GitHub itself:
+The result has one line per vertex: its partner, or `-2`
+(`NO_MATCHED_NODES`) if it has none.
 
-  ```bash
-  gh extension install yusukebe/gh-markdown-preview   # once per Codespace
-  gh markdown-preview README.md
-  ```
-- New Codespaces build the container image first, which takes a couple of
-  minutes. To skip that, enable prebuilds under the repository's
-  **Settings** → **Codespaces** → **Set up prebuild**.
+### From VS Code
 
-## Start a new sketch
+Run these from the Command Palette with **Tasks: Run Task**. Each one builds
+first, then asks for the matrix, number of threads, and (for N-way) hands per
+vertex:
 
-1. Rename the project and make it yours:
+| Task | Does |
+|------|------|
+| **Run: One-Way Matching** | Writes the result to `<build dir>/one_way.out` |
+| **Run: N-Way Matching** | Writes the result to `<build dir>/n_ways.out` |
+| **Run: Compare One-Way with Reference** | Runs `compare_with_reference.sh` on your build |
+| **Run: Compare N-Way with Reference** | The same, for N-way |
+| **Data: Generate Test Matrices** | Writes the small, medium, and large generated matrices |
+| **Data: Fetch Test Matrices** | Runs `fetch_matrices.sh` for all six matrices |
 
-   ```bash
-   ./scripts/rename.sh my_sketch "Your Name"
-   ```
+To stop a run that hangs, use the trash-can icon on its terminal.
 
-   This replaces `graph_matching`, `graph_matching`, and `GRAPH_MATCHING_` throughout the
-   repository and moves each `include/graph_matching/` to `include/my_sketch/`.
-   It sets every `\author` in the file headers and the `LICENSE` copyright
-   holder to the name you give, or to `git config user.name` if you leave
-   it out, and sets every `\date` to today. Then it deletes itself.
-   Commit or stash first; it refuses to run on a dirty tree.
+To debug, use the **CMake: Debug graph_matching (one-way)** or **(N-way)**
+launch configuration. Both run on `data/test.mtx` with 2 threads; the N-way
+one uses 2 hands.
 
-2. Delete the example components you don't need. Each one is a folder
-   plus a line in three places:
+### From CMake
 
-   | Remove | And its line in |
-   |--------|-----------------|
-   | `components/<name>/` | `CMakeLists.txt` (`add_subdirectory`) |
-   | `tests/<name>_tests.cpp` | `tests/CMakeLists.txt` (source and link) |
-   | | `app/CMakeLists.txt` and `app/main.cpp`, if the app uses it |
+The `run_one_way` and `run_n_ways` targets build the program and run it:
 
-3. Update the `project()` description in `CMakeLists.txt` and
-   `PROJECT_BRIEF` in `docs/Doxyfile.in`, and replace this README.
+```bash
+cmake --build --preset debug --target run_one_way
+cmake --build --preset debug --target run_n_ways
+```
+
+They write `one_way.out` or `n_ways.out` in the build directory. To change
+the input, set these when configuring:
+
+```bash
+cmake --preset debug \
+    -DGRAPH_MATCHING_RUN_MATRIX=data/cant/cant.mtx \
+    -DGRAPH_MATCHING_RUN_THREADS=8 \
+    -DGRAPH_MATCHING_RUN_HANDS=3
+```
+
+CMake turns a relative `GRAPH_MATCHING_RUN_MATRIX` into an absolute path from
+the directory you run `cmake` in, which is the repository root when you use
+presets.
+
+## Test matrices
+
+`data/test.mtx` is a 9-vertex example. For anything larger, generate random
+matrices or download the SuiteSparse ones.
+
+### Generated matrices
+
+`generate_matrix` writes a random graph as a symmetric Matrix Market file:
+
+```bash
+./build/debug/app/generate_matrix data/generated/mine.mtx 50000 12        # 50,000 vertices, average degree 12
+./build/debug/app/generate_matrix data/generated/mine.mtx 50000 12 100 7  # weights 1-100, seed 7
+```
+
+Weights are whole numbers from 1 to the maximum (default 10), so many edges
+tie and the tie-breaking by vertex ID gets exercised; raise the maximum for
+fewer ties. The same arguments always produce the same file.
+
+The `generate_matrices` target (or the **Data: Generate Test Matrices** task)
+writes a standard set to `data/generated/`, which git ignores:
+
+| File | Vertices | Average degree | Size |
+|------|----------|----------------|------|
+| `small.mtx` | 1,000 | 8 | 39 KB |
+| `medium.mtx` | 100,000 | 16 | 11 MB |
+| `large.mtx` | 1,000,000 | 16 | 122 MB |
+
+```bash
+cmake --build --preset debug --target generate_matrices
+```
+
+### SuiteSparse matrices
+
+The six larger matrices the assignment used come from the SuiteSparse Matrix
+Collection:
+
+```bash
+./scripts/fetch_matrices.sh              # all six, smallest first
+./scripts/fetch_matrices.sh cant hood    # only these
+```
+
+They are extracted to `data/<name>/<name>.mtx` and ignored by git. `ldoor`
+and `af_shell10` are hundreds of megabytes each.
+
+The download host has refused requests from cloud machines, including
+Codespaces. If it refuses you, download the `.tar.gz` from a browser on
+another network instead (the matrix's page, such as
+<https://sparse.tamu.edu/Williams/cant>, has the link), drag it into `data/`
+in the Explorer, and extract it there:
+
+```bash
+cd data && tar -xzf cant.tar.gz && rm cant.tar.gz
+```
+
+## Checking against the reference
+
+`reference/match-sol` is the reference binary from the starter code (x86-64
+Linux). To run it and your build on the same input and compare the results:
+
+```bash
+./scripts/compare_with_reference.sh data/test.mtx oneWay 4
+./scripts/compare_with_reference.sh data/cant/cant.mtx nWays 2 4
+```
+
+The script exits nonzero and shows the first differences if the matchings
+differ.
 
 ## Layout
 
 ```text
-app/                    Command-line executable (main.cpp)
-components/
-    greeting/           Compiled C++ library        graph_matching::greeting
-    ring_buffer/        Header-only C++ library     graph_matching::ring_buffer
-    sensor/             C library                   graph_matching::sensor
-tests/                  doctest unit tests, one file per component
-cmake/                  Shared CMake helpers (compiler warnings)
-docs/                   Doxygen configuration
-scripts/rename.sh       One-time project rename
+app/main.c                  Command-line program (harness)
+components/match/           Matching library
+    include/graph_matching/   Headers
+    src/oneway.c              Assignment
+    src/filter.c              Assignment
+    src/nways.c               Assignment (extra credit)
+    src/*_wrapper.c           Thread drivers (harness)
+    src/utils.c, src/sort.c   Graph I/O and helpers (harness)
+third_party/mmio/           NIST Matrix Market I/O library, unchanged
+components/generator/       Random test matrix generator (C++)
+app/generate_matrix.cpp     Generator command-line tool
+tests/                      doctest unit tests for the harness and generator
+data/test.mtx               Small example matrix
+docs/                       Doxygen configuration
+reference/match-sol         Reference binary
+scripts/                    Matrix download and reference comparison
 ```
 
-Each component has its own `CMakeLists.txt` that defines a
-`graph_matching_<name>` target with a `graph_matching::<name>` alias, and puts its public
-headers under `include/graph_matching/`. Link against the alias:
+## Changes from the starter code
 
-```cmake
-target_link_libraries(my_target PRIVATE graph_matching::ring_buffer)
-```
+The harness behaves the same as the original: on `test.mtx` and on generated
+matrices with ties, duplicate entries, self-loops, and pattern-only values,
+`read_mm` builds the same graph and the sequential mode writes the same
+matching. The differences:
 
-### Adding a component
+- Formatting, Doxygen comments, and snake_case names in this project's style.
+- `fscanf` results are checked, so malformed input stops with an error
+  instead of leaving values unset.
+- `read_mm` no longer prints an uninitialized type code when a file's banner
+  is invalid, and does not call `malloc(0)` for a matrix with no edges.
+- The sorts return early on empty input instead of reading past the array.
+- The thread drivers free their barrier, and the N-way driver's timing line
+  says "N Way" instead of "One Way".
+- Timing uses `clock_gettime(CLOCK_MONOTONIC)` instead of `gettimeofday`.
+- `err()` uses `vsnprintf`, so long messages are truncated instead of
+  overflowing its buffer.
 
-Copy the component folder closest to what you need (`ring_buffer` for
-header-only, `greeting` for compiled C++, `sensor` for C), rename the
-files and targets inside it, and add an `add_subdirectory` line to the
-root `CMakeLists.txt`.
+## Credits and license
 
-## Command line
-
-```bash
-cmake --preset debug                    # configure
-cmake --build --preset debug            # build
-./build/debug/app/graph_matching               # run
-ctest --preset debug                    # test
-```
-
-Replace `debug` with any preset:
-
-| Preset | Purpose |
-|--------|---------|
-| `debug` | Day-to-day development |
-| `release` | Optimized build |
-| `asan-ubsan` | Debug build with AddressSanitizer and UndefinedBehaviorSanitizer; any report fails the test |
-
-To fail the build on compiler warnings (as CI does), add
-`-DCMAKE_COMPILE_WARNING_AS_ERROR=ON` when configuring.
-
-### Formatting and static analysis
-
-```bash
-git ls-files '*.c' '*.cpp' '*.h' '*.hpp' | xargs clang-format -i
-run-clang-tidy -quiet -p build/debug "^$PWD/(app|components|tests)/.*\.(c|cpp)$"
-```
-
-### Documentation
-
-```bash
-cmake --build --preset debug --target docs
-```
-
-Output goes to `build/debug/docs/html/index.html`.
-
-## Targets
-
-| Target | Description |
-|--------|-------------|
-| `graph_matching` | Command-line executable |
-| `graph_matching_greeting` | Compiled C++ library (`graph_matching::greeting`) |
-| `graph_matching_ring_buffer` | Header-only C++ library (`graph_matching::ring_buffer`) |
-| `graph_matching_sensor` | C library (`graph_matching::sensor`) |
-| `graph_matching_tests` | doctest unit tests |
-| `docs` | Doxygen HTML, when Doxygen is installed |
-
-`GRAPH_MATCHING_BUILD_TESTS` and `GRAPH_MATCHING_BUILD_DOCS` default to `ON` when this
-is the top-level project and `OFF` when it is added to another project
-with `add_subdirectory` or `FetchContent`.
-
-## Building outside Codespaces
-
-The devcontainer has everything installed. Elsewhere you need:
-
-- CMake 3.25+ and Ninja
-- GCC 14+, or Clang 18+ with a standard library that provides `<print>`
-  (libstdc++ 14 or libc++ 17)
-- Network access on first configure, to fetch doctest
-- Optional: clang-format, clang-tidy, Doxygen, GDB
-
-## Limitations
-
-- Only GCC 14 and Clang 18 on Linux are tested (locally and in CI). The
-  MSVC warning flags in `cmake/CompilerWarnings.cmake` have never been
-  built, and the `asan-ubsan` preset's flags are GCC/Clang-only.
-- There are no `install()` or package export rules. Add them if a sketch
-  grows into a library that other projects consume.
-
-## Maintaining the template
-
-GitHub only shows **Use this template** when **Template repository** is
-ticked under the repository's **Settings** → **General**. A fork or copy
-of this repository needs that setting turned on again.
-
-## License
-
-MIT. See [LICENSE](LICENSE).
+The harness, test matrix, and reference binary are adapted from
+course-provided starter code. `mmio` is from NIST's
+[Matrix Market](https://math.nist.gov/MatrixMarket/). The MIT license in
+[LICENSE](LICENSE) covers this project's own code only.
