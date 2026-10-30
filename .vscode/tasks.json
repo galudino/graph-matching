@@ -34,12 +34,12 @@
             "problemMatcher": []
         },
         {
-            "label": "Run: One-Way Matching",
+            "label": "Run (C): One-Way Matching",
             "type": "process",
-            "command": "${command:cmake.buildDirectory}/app/graph_matching",
+            "command": "${command:cmake.buildDirectory}/bin/graph_matching_c",
             "args": [
                 "${input:matrix}",
-                "${command:cmake.buildDirectory}/one_way.out",
+                "${command:cmake.buildDirectory}/one_way_c.out",
                 "one-way",
                 "${input:threads}"
             ],
@@ -50,12 +50,12 @@
             "problemMatcher": []
         },
         {
-            "label": "Run: N-Way Matching",
+            "label": "Run (C): N-Way Matching",
             "type": "process",
-            "command": "${command:cmake.buildDirectory}/app/graph_matching",
+            "command": "${command:cmake.buildDirectory}/bin/graph_matching_c",
             "args": [
                 "${input:matrix}",
-                "${command:cmake.buildDirectory}/n_ways.out",
+                "${command:cmake.buildDirectory}/n_ways_c.out",
                 "n-way",
                 "${input:hands}",
                 "${input:threads}"
@@ -67,12 +67,12 @@
             "problemMatcher": []
         },
         {
-            "label": "Run: Greedy Matching",
+            "label": "Run (C): Greedy Matching",
             "type": "process",
-            "command": "${command:cmake.buildDirectory}/app/graph_matching",
+            "command": "${command:cmake.buildDirectory}/bin/graph_matching_c",
             "args": [
                 "${input:matrix}",
-                "${command:cmake.buildDirectory}/greedy.out",
+                "${command:cmake.buildDirectory}/greedy_c.out",
                 "greedy"
             ],
             "options": {
@@ -82,7 +82,7 @@
             "problemMatcher": []
         },
         {
-            "label": "Run: Compare One-Way with Reference",
+            "label": "Run (C): Compare One-Way with Reference",
             "type": "process",
             "command": "${workspaceFolder}/scripts/compare_with_reference.sh",
             "args": [
@@ -93,14 +93,14 @@
             "options": {
                 "cwd": "${workspaceFolder}",
                 "env": {
-                    "GRAPH_MATCHING_BIN": "${command:cmake.buildDirectory}/app/graph_matching"
+                    "GRAPH_MATCHING_BIN": "${command:cmake.buildDirectory}/bin/graph_matching_c"
                 }
             },
             "dependsOn": "CMake: Build",
             "problemMatcher": []
         },
         {
-            "label": "Run: Compare N-Way with Reference",
+            "label": "Run (C): Compare N-Way with Reference",
             "type": "process",
             "command": "${workspaceFolder}/scripts/compare_with_reference.sh",
             "args": [
@@ -112,7 +112,7 @@
             "options": {
                 "cwd": "${workspaceFolder}",
                 "env": {
-                    "GRAPH_MATCHING_BIN": "${command:cmake.buildDirectory}/app/graph_matching"
+                    "GRAPH_MATCHING_BIN": "${command:cmake.buildDirectory}/bin/graph_matching_c"
                 }
             },
             "dependsOn": "CMake: Build",
@@ -124,7 +124,7 @@
             "command": "build",
             "preset": "${command:cmake.activeBuildPresetName}",
             "targets": [
-                "generate_matrices"
+                "generate_matrices_c"
             ],
             "problemMatcher": []
         },
@@ -146,7 +146,7 @@
             "problemMatcher": []
         },
         {
-            "label": "Test: Assignment",
+            "label": "Test (C): Assignment",
             "type": "shell",
             "command": "cmake --preset assignment && cmake --build --preset assignment && ctest --preset assignment",
             "options": {
@@ -156,14 +156,14 @@
             "problemMatcher": []
         },
         {
-            "label": "CMake: Documentation",
+            "label": "CMake: Documentation (C)",
             "type": "process",
             "command": "cmake",
             "args": [
                 "--build",
                 "${command:cmake.buildDirectory}",
                 "--target",
-                "docs"
+                "docs_c"
             ],
             "dependsOn": "CMake: Configure",
             "problemMatcher": []
@@ -171,19 +171,19 @@
         {
             "label": "Clang: Format Check",
             "type": "shell",
-            "command": "find app components tests -type f \\( -name '*.c' -o -name '*.cpp' -o -name '*.h' -o -name '*.hpp' \\) -exec clang-format --dry-run --Werror {} +",
+            "command": "find c/app c/components c/tests -type f \\( -name '*.c' -o -name '*.cpp' -o -name '*.h' -o -name '*.hpp' \\) -exec clang-format --dry-run --Werror {} +",
             "problemMatcher": []
         },
         {
             "label": "Clang: Format All",
             "type": "shell",
-            "command": "find app components tests -type f \\( -name '*.c' -o -name '*.cpp' -o -name '*.h' -o -name '*.hpp' \\) -exec clang-format -i {} +",
+            "command": "find c/app c/components c/tests -type f \\( -name '*.c' -o -name '*.cpp' -o -name '*.h' -o -name '*.hpp' \\) -exec clang-format -i {} +",
             "problemMatcher": []
         },
         {
             "label": "Clang: Tidy",
             "type": "shell",
-            "command": "run-clang-tidy -quiet -p '${command:cmake.buildDirectory}' '^${workspaceFolder}/(app|components|tests)/.*\\.(c|cpp)$'",
+            "command": "run-clang-tidy -quiet -p '${command:cmake.buildDirectory}' '^${workspaceFolder}/c/(app|components|tests)/.*\\.(c|cpp)$'",
             "dependsOn": "CMake: Configure",
             "problemMatcher": []
         }

@@ -1,17 +1,19 @@
 name: Release
 
-# Publish a GitHub release when a version tag is pushed, with the assignment
-# PDF attached. The release notes are the tag's message (git tag -a), or
-# GitHub's generated notes for a tag without one.
+# Publish a GitHub release when an implementation's version tag is pushed:
+# c/v1.2.3 for the C project in c/. Each implementation is versioned on its
+# own, and the tag must match the VERSION in its CMakeLists.txt.
 #
-# The tag must match the project VERSION in CMakeLists.txt: v1.2.3 for 1.2.3.
+# The release notes are the tag's message (git tag -a), or GitHub's generated
+# notes for a tag without one. The implementation's assignment PDF, if it has
+# one, is attached.
 #
 # A release created by hand in the GitHub UI also pushes its tag; in that case
 # the release is kept as written and only the PDF is attached.
 
 on:
   push:
-    tags: ['v*']
+    tags: ['c/v*']
 
 permissions:
   contents: write
@@ -35,20 +37,33 @@ jobs:
 
       - name: Check the tag matches the project version
         run: |
-          version=$(sed -n 's/^ *VERSION \([0-9][0-9.]*\)$/\1/p' CMakeLists.txt | head -n 1)
-          if [ "$TAG" != "v$version" ]; then
-              echo "::error::Tag $TAG does not match project VERSION $version in CMakeLists.txt"
+          project=${TAG%%/*}
+          version=$(sed -n 's/^ *VERSION \([0-9][0-9.]*\)$/\1/p' "$project/CMakeLists.txt" | head -n 1)
+          if [ "$TAG" != "$project/v$version" ]; then
+              echo "::error::Tag $TAG does not match VERSION $version in $project/CMakeLists.txt"
               exit 1
           fi
 
       - name: Publish the release
         run: |
+          project=${TAG%%/*}
+          case $project in
+          c) name=C ;;
+          *) name=$project ;;
+          esac
+          title="graph-matching $name ${TAG#*/v}"
+
+          assets=()
+          if [ -f "$project/docs/assignment.pdf" ]; then
+              assets+=("$project/docs/assignment.pdf")
+          fi
+
           if gh release view "$TAG" > /dev/null 2>&1; then
-              gh release upload "$TAG" docs/assignment.pdf --clobber
+              if [ ${#assets[@]} -gt 0 ]; then
+                  gh release upload "$TAG" "${assets[@]}" --clobber
+              fi
           elif [ "$(git cat-file -t "$TAG")" = tag ]; then
-              gh release create "$TAG" docs/assignment.pdf \
-                  --title "graph-matching ${TAG#v}" --notes-from-tag
+              gh release create "$TAG" "${assets[@]}" --title "$title" --notes-from-tag
           else
-              gh release create "$TAG" docs/assignment.pdf \
-                  --title "graph-matching ${TAG#v}" --generate-notes
+              gh release create "$TAG" "${assets[@]}" --title "$title" --generate-notes
           fi

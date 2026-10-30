@@ -2,39 +2,39 @@
     "version": "0.2.0",
     "inputs": [
         {
-            "id": "graph_matchingPath",
+            "id": "graphMatchingCPath",
             "type": "command",
             "command": "cmake.launchTargetPath",
             "args": {
-                "targetName": "graph_matching"
+                "targetName": "graph_matching_c"
             }
         },
         {
-            "id": "testsPath",
+            "id": "cTestsPath",
             "type": "command",
             "command": "cmake.launchTargetPath",
             "args": {
-                "targetName": "graph_matching_tests"
+                "targetName": "graph_matching_c_tests"
             }
         },
         {
-            "id": "assignmentTestsPath",
+            "id": "cAssignmentTestsPath",
             "type": "command",
             "command": "cmake.launchTargetPath",
             "args": {
-                "targetName": "graph_matching_assignment_tests"
+                "targetName": "graph_matching_c_assignment_tests"
             }
         }
     ],
     "configurations": [
         {
-            "name": "CMake: Debug graph_matching (one-way)",
+            "name": "CMake: Debug graph_matching_c (one-way)",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${input:graph_matchingPath}",
+            "program": "${input:graphMatchingCPath}",
             "args": [
                 "${workspaceFolder}/data/test.mtx",
-                "${workspaceFolder}/build/test.out",
+                "${workspaceFolder}/build/test_c.out",
                 "one-way",
                 "2"
             ],
@@ -53,13 +53,13 @@
             ]
         },
         {
-            "name": "CMake: Debug graph_matching (N-way)",
+            "name": "CMake: Debug graph_matching_c (N-way)",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${input:graph_matchingPath}",
+            "program": "${input:graphMatchingCPath}",
             "args": [
                 "${workspaceFolder}/data/test.mtx",
-                "${workspaceFolder}/build/test.out",
+                "${workspaceFolder}/build/test_c.out",
                 "n-way",
                 "2",
                 "2"
@@ -79,10 +79,10 @@
             ]
         },
         {
-            "name": "CMake: Debug graph_matching_tests",
+            "name": "CMake: Debug graph_matching_c_tests",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${input:testsPath}",
+            "program": "${input:cTestsPath}",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
@@ -92,10 +92,10 @@
             "miDebuggerPath": "/usr/bin/gdb"
         },
         {
-            "name": "CMake: Debug graph_matching_assignment_tests",
+            "name": "CMake: Debug graph_matching_c_assignment_tests",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${input:assignmentTestsPath}",
+            "program": "${input:cAssignmentTestsPath}",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",

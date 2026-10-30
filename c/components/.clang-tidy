@@ -1,0 +1,21 @@
+# Adjustments for the C components, on top of the project's checks.
+#
+# - modernize-use-using, modernize-macro-to-enum, performance-enum-size:
+#   C++-only advice.
+# - bugprone-easily-swappable-parameters: C APIs pass runs of ints, such as
+#   (vertex_count, edge_count); the types cannot tell them apart.
+# - DeprecatedOrUnsafeBufferHandling: asks for C11 Annex K functions such as
+#   fprintf_s, which glibc does not provide.
+#
+# components/generator (C++) turns these back on.
+InheritParentConfig: true
+Checks: >
+  -modernize-use-using,
+  -modernize-macro-to-enum,
+  -performance-enum-size,
+  -bugprone-easily-swappable-parameters,
+  -clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling
+CheckOptions:
+  # The logging macros (logd, loge, logw, logi) are lowercase by choice.
+  - key: readability-identifier-naming.MacroDefinitionIgnoredRegexp
+    value: '^log[dewi]$'

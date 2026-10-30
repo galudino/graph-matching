@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Run this project's build and the reference binary on the same input, then
+# Run a build of the matcher and the reference binary on the same input, then
 # compare the two matchings.
 #
 #   ./scripts/compare_with_reference.sh data/test.mtx one-way 4
@@ -8,8 +8,9 @@
 #
 # The arguments after the input file are the matcher's method arguments; the
 # reference binary gets the equivalent in its own syntax (oneWay, nWays).
-# Build first (cmake --build --preset debug). Set GRAPH_MATCHING_BIN to
-# compare a different build, such as build/release/app/graph_matching.
+# Build first (cmake --build --preset debug). Compares the C build by default;
+# set GRAPH_MATCHING_BIN to compare a different one, such as
+# build/release/bin/graph_matching_c.
 #
 
 set -euo pipefail
@@ -23,7 +24,7 @@ usage() {
 [[ $# -ge 3 ]] || usage
 
 root=$(git rev-parse --show-toplevel)
-binary=${GRAPH_MATCHING_BIN:-$root/build/debug/app/graph_matching}
+binary=${GRAPH_MATCHING_BIN:-$root/build/debug/bin/graph_matching_c}
 reference=${GRAPH_MATCHING_REFERENCE:-$root/reference/match-sol}
 
 input=$1
