@@ -202,6 +202,20 @@ python3 docs/figures/generate.py
 ./scripts/build_assignment_pdf.sh
 ```
 
+## Releases
+
+Pushing a version tag publishes a GitHub release with `docs/assignment.pdf`
+attached. The tag must match `VERSION` in `CMakeLists.txt`, and an annotated
+tag's message becomes the release notes:
+
+```bash
+git tag -a v1.0.0 -m "Release notes"
+git push origin v1.0.0
+```
+
+A release drafted in the GitHub UI works too; the workflow only attaches the
+PDF to it.
+
 ## Credits and license
 
 The harness, test matrix, and reference binary are adapted from
