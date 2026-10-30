@@ -1,0 +1,54 @@
+name: Release
+
+# Publish a GitHub release when a version tag is pushed, with the assignment
+# PDF attached. The release notes are the tag's message (git tag -a), or
+# GitHub's generated notes for a tag without one.
+#
+# The tag must match the project VERSION in CMakeLists.txt: v1.2.3 for 1.2.3.
+#
+# A release created by hand in the GitHub UI also pushes its tag; in that case
+# the release is kept as written and only the PDF is attached.
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-24.04
+
+    env:
+      GH_TOKEN: ${{ github.token }}
+      TAG: ${{ github.ref_name }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # The checkout can leave the tag pointing straight at the commit; fetch
+      # the tag object itself so an annotated tag's message can be read.
+      - name: Fetch the tag
+        run: git fetch --force origin "refs/tags/$TAG:refs/tags/$TAG"
+
+      - name: Check the tag matches the project version
+        run: |
+          version=$(sed -n 's/^ *VERSION \([0-9][0-9.]*\)$/\1/p' CMakeLists.txt | head -n 1)
+          if [ "$TAG" != "v$version" ]; then
+              echo "::error::Tag $TAG does not match project VERSION $version in CMakeLists.txt"
+              exit 1
+          fi
+
+      - name: Publish the release
+        run: |
+          if gh release view "$TAG" > /dev/null 2>&1; then
+              gh release upload "$TAG" docs/assignment.pdf --clobber
+          elif [ "$(git cat-file -t "$TAG")" = tag ]; then
+              gh release create "$TAG" docs/assignment.pdf \
+                  --title "graph-matching ${TAG#v}" --notes-from-tag
+          else
+              gh release create "$TAG" docs/assignment.pdf \
+                  --title "graph-matching ${TAG#v}" --generate-notes
+          fi
